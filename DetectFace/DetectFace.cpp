@@ -285,15 +285,19 @@ void drawEyeLine(CvSeq* eyes, IplImage* img)
 	}	
 }
 
-void drawRectangle(const CvRect &r, IplImage* img, CvScalar color) {
+void drawRectangle(CvRect *r, IplImage* img, CvScalar color) {
+
+	if(r == NULL)
+		return;
+
 	// Create two points to represent the face locations
     CvPoint pt1, pt2;
 
     // Find the dimensions of the face,and scale it if necessary
-    pt1.x = r.x;
-    pt2.x = r.x + r.width;
-    pt1.y = r.y;
-    pt2.y = r.y + r.height;
+    pt1.x = r->x;
+    pt2.x = r->x + r->width;
+    pt1.y = r->y;
+    pt2.y = r->y + r->height;
 
     // Draw the rectangle in the input image
     cvRectangle(img, pt1, pt2, color, 3);
@@ -354,8 +358,6 @@ void drawFaces(CvSeq* faces, IplImage* img, CvScalar color) {
     //cvReleaseImage( &temp );
 }
 
-
-
 // Function to detect and draw any faces that is present in an image
 CvSeq* detect_and_draw( IplImage* img )
 {
@@ -365,19 +367,15 @@ CvSeq* detect_and_draw( IplImage* img )
 
     // Find whether the cascade is loaded, to find the faces. If yes, then:
     if( faceCascade )
-    {
-       // There can be more than one face in an image. So create a growable sequence of faces.
-       // Detect the objects and store them in the sequence
-       
+    {      
 		faces = cvHaarDetectObjects(img, faceCascade, storage, 1.1, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 40) );
-		cvClearMemStorage( storage );
+		//cvClearMemStorage( storage );
 
 		//CvRect *faceRectangle = findBiggestRectangle(faces);
 		CvRect *faceRectangle = getProbable(faces);
 		if(faceRectangle)
 		{
-			drawRectangle(*faceRectangle, img, CV_RGB(255,0,0));
-			//drawFaces(faces, img);
+			drawRectangle(faceRectangle, img, CV_RGB(255, 255, 255));
 
 			float widthArea = 0.3f;
 			float heightArea = 0.3f;
@@ -386,64 +384,59 @@ CvSeq* detect_and_draw( IplImage* img )
 			//cvResetImageROI(img);
 			//cvSetImageROI(img, noseROI);
 			
-			//tmp
 			cvSetImageROI(img, *faceRectangle);
 
-			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(10, 20));
-			cvClearMemStorage( storage );
 
-			drawFaces(noseRectangles, img, CV_RGB(0, 255, 0));
+			//cvClearMemStorage( storage );
+
+			//cvResetImageROI(img);
+			//cvSetImageROI(img, *faceRectangle);
 			
-			/*
-			if(noseRectangles && noseRectangles->total)
-				drawRectangle(*(CvRect*)cvGetSeqElem(noseRectangles, 0), img);
-			*/
 
-			//cout << "Number of noses: " << (noseRectangles ? noseRectangles->total : 0) << endl;
+			
 
-			widthArea = 0.0f;
-			heightArea = 0.2f;
-			//CvRect eyesROI = {faceRectangle->x + faceRectangle->width * widthArea, faceRectangle->y + faceRectangle->height * heightArea, faceRectangle->width * (1.0f - widthArea), faceRectangle->height * (1.0f - heightArea)};
+			float top = 0.25f, bottom = 0.55f, left = 0.1f, right = 0.9f;
+			float noseLeft = 0.3f, noseRight = 0.7f, noseTop = 0.5f, noseBottom = 0.8f;
+			CvRect leftEyeROI = {faceRectangle->x + faceRectangle->width * left, faceRectangle->y + faceRectangle->height * top, faceRectangle->width * (right - left) / 2.0f, faceRectangle->height * (bottom - top)};
+			CvRect rightEyeROI = {faceRectangle->x + faceRectangle->width * 0.5f, faceRectangle->y + faceRectangle->height * top, faceRectangle->width * (right - left) / 2.0f, faceRectangle->height * (bottom - top)};
+			CvRect noseROI = {faceRectangle->x + faceRectangle->width * noseLeft, faceRectangle->y + faceRectangle->height * noseTop, faceRectangle->width * (noseRight - noseLeft), faceRectangle->height * (noseBottom - noseTop)};
+			
+			cvResetImageROI(img);
+			drawRectangle(&leftEyeROI, img, CV_RGB(175, 175, 175));
+			drawRectangle(&rightEyeROI, img, CV_RGB(175, 0, 175));
+			drawRectangle(&noseROI, img, CV_RGB(0, 175, 175));
+
+			cvResetImageROI(img);
+			cvSetImageROI(img, noseROI);
+			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(10, 20));
+			drawRectangle(getProbable(noseRectangles), img, CV_RGB(0, 0, 255));
+
+			//cvResetImageROI(img);
+			//cvSetImageROI(img, *faceRectangle);
 
 			//faceRectangle->y += faceRectangle->height * 0.10f;
 			//faceRectangle->height *= 0.7f;
 			//cvResetImageROI(img);
-			//cvSetImageROI(img, eyesROI);
-
+			cvResetImageROI(img);
+			//cvSetImageROI(img, *faceRectangle);
+			cvSetImageROI(img, leftEyeROI);
 			leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(50, 25));
+			cout << "Found left rectangles: " << leftEyeRectangles->total << "\n";
+			drawRectangle(getProbable(leftEyeRectangles), img, CV_RGB(0, 255, 0));
+
+			cvResetImageROI(img);
+			//cvSetImageROI(img, *faceRectangle);
+			cvSetImageROI(img, rightEyeROI);
 			rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(50, 25));
-			cvClearMemStorage( storage );
-			//eyeRight = cvHaarDetectObjects(img, eyeRightCascade, storage, 1.1, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(50, 25));
-
-			// Switching to these parameters reduced my CPU's load from 70% to 20%
-		    //faces = cvHaarDetectObjects(img, faceCascade, storage, 2, 3, CV_HAAR_SCALE_IMAGE | CV_HAAR_DO_CANNY_PRUNING | CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH, cvSize(30, 30));
-
-			
-		    //cout << "Number of eyes: " << (eyesRectangles ? eyesRectangles->total : 0) << endl;
-
-			
-			//moveRectangles(eyeLeft, faceRectangle);
-			//moveRectangles(eyeRight, faceRectangle);
-			//if(eyesRectangles && noseRectangles && eyesRectangles->total > 1 && noseRectangles->total > 0)
-			//printf("eyes degree: %f \n", getDegree(*(CvRect*)cvGetSeqElem( eyesRectangles, 0 ), *(CvRect*)cvGetSeqElem( eyesRectangles, 1 ),
-			//	*(CvRect*)cvGetSeqElem( noseRectangles, 0 )));
-
-			drawFaces(leftEyeRectangles, img, CV_RGB(0, 0, 255));
-			drawFaces(rightEyeRectangles, img, CV_RGB(255, 255, 0));
-
-			/*
-			if(eyesRectangles && eyesRectangles->total >= 2) {
-				drawRectangle(*(CvRect*)cvGetSeqElem(eyesRectangles, 0), img);
-				drawRectangle(*(CvRect*)cvGetSeqElem(eyesRectangles, 1), img);
-			}
-			*/
-			//drawEyeLine(eyesRectangles, img);
+			//cvClearMemStorage( storage );
+			drawRectangle(getProbable(rightEyeRectangles), img, CV_RGB(255, 0, 0));
 
 			cvResetImageROI(img);
 		}
 
 		// Show the image in the window named "result"
 		cvShowImage( "result", img );
+		cvClearMemStorage( storage );
     }
 
 	return faces;
