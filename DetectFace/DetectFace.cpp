@@ -1,10 +1,12 @@
 // OpenCV Sample Application: facedetect.c
-
 #include "stdafx.h"
+
+#define _USE_MATH_DEFINES
 
 // Include header files
 #include "cv.h"
 #include "highgui.h"
+#include "FPSCalculator.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,21 +17,37 @@
 #include <limits.h>
 #include <time.h>
 #include <ctype.h>
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+using namespace cv;
 
 // Create memory for calculations
 static CvMemStorage* storage = 0;
 
 // Create a new Haar classifier
-static CvHaarClassifierCascade* cascade = 0;
+static CvHaarClassifierCascade* faceCascade = 0;
+static CvHaarClassifierCascade* leftEyeCascade = 0;
+static CvHaarClassifierCascade* rightEyeCascade = 0;
+static CvHaarClassifierCascade* noseCascade = 0;
 
 // Function prototype for detecting and drawing an object from an image
 CvSeq* detect_and_draw( IplImage* image );
-void drawFaces(CvSeq* faces, IplImage* img);
+void drawFaces(CvSeq* faces, IplImage* img, CvScalar color);
 
 // Create a string that contains the cascade name
-const char* cascade_name = "haarcascade_frontalface_alt2.xml";
+const char* cascadeFacePath = "haarcascade_frontalface_alt2.xml";
+const char* cascadeLeftEyePath = "haarcascade_mcs_righteye.xml";
+const char* cascadeRightEyePath = "haarcascade_mcs_lefteye.xml";
+const char* cascadeNosePath = "haarcascade_mcs_nose.xml";
 
-CvSeq *faces = 0;
+CvSeq *faceRectangles = 0;
+CvSeq *leftEyeRectangles = 0;
+CvSeq *rightEyeRectangles = 0;
+CvSeq *noseRectangles = 0;
+FPSCalculator fps;
+
 int skipFrames = 1;
 
 // Main function, defines the entry point for the program.
@@ -51,28 +69,24 @@ int main( int argc, char** argv )
     // Check for the correct usage of the command line
     if( argc > 1 && strncmp( argv[1], "--cascade=", optlen ) == 0 )
     {
-        cascade_name = argv[1] + optlen;
+        cascadeFacePath = argv[1] + optlen;
         input_name = argc > 2 ? argv[2] : 0;
     }
     else
     {
-		/*
-        fprintf( stderr,
-        "Usage: facedetect --cascade=\"<cascade_path>\" [filename|camera_index]\n" );
-		getchar();
-        return -1;
-		*/
-        
 		input_name = argc > 1 ? argv[1] : 0;
     }
 
     // Load the HaarClassifierCascade
-    cascade = (CvHaarClassifierCascade*)cvLoad( cascade_name, 0, 0, 0 );
-    
+    faceCascade = (CvHaarClassifierCascade*)cvLoad( cascadeFacePath, 0, 0, 0 );
+    leftEyeCascade = (CvHaarClassifierCascade*)cvLoad( cascadeLeftEyePath, 0, 0, 0 );
+	rightEyeCascade = (CvHaarClassifierCascade*)cvLoad( cascadeRightEyePath, 0, 0, 0 );
+	noseCascade = (CvHaarClassifierCascade*)cvLoad( cascadeNosePath, 0, 0, 0 );
+
     // Check whether the cascade has loaded successfully. Else report and error and quit
-    if( !cascade )
+    if(!faceCascade || !leftEyeCascade || !rightEyeCascade || !noseCascade)
     {
-        fprintf( stderr, "ERROR: Could not load classifier cascade\n" );
+        fprintf( stderr, "ERROR: Could not load classifier cascade(s)\n" );
 		getchar();
         return -1;
     }
@@ -101,6 +115,7 @@ int main( int argc, char** argv )
             // Capture the frame and load it in IplImage
             if( !cvGrabFrame( capture ))
                 break;
+			
             frame = cvRetrieveFrame(capture);
 
             // If the frame does not exist, quit the loop
@@ -120,13 +135,13 @@ int main( int argc, char** argv )
             // Else flip and copy the image
             else
                 cvFlip( frame, frame_copy, 0 );
-            
 
 			if(index % skipFrames == 0) {
 				// Call the function to detect and draw the face
-				faces = detect_and_draw( frame_copy );
+				faceRectangles = detect_and_draw( frame_copy );
 			} else {
-				drawFaces(faces, frame_copy);
+			//	drawFaces(faceRectangles, frame_copy);
+				cvShowImage( "result", frame_copy );
 			}
 			
             // Wait for a while before proceeding to the next frame
@@ -134,71 +149,13 @@ int main( int argc, char** argv )
                 break;
 			
 			index++;
+			fps.addFrame();
+			printf("FPS: %d\n", fps.getFPS());
         }
 
         // Release the images, and capture memory
         cvReleaseImage( &frame_copy );
         cvReleaseCapture( &capture );
-    }
-
-    // If the capture is not loaded succesfully, then:
-    else
-    {
-        // Assume the image to be lena.jpg, or the input_name specified
-        const char* filename = input_name ? input_name : (char*)"lena.jpg";
-
-        // Load the image from that filename
-        IplImage* image = cvLoadImage( filename, 1 );
-
-        // If Image is loaded succesfully, then:
-        if( image )
-        {
-            // Detect and draw the face
-            detect_and_draw( image );
-
-            // Wait for user input
-            cvWaitKey(0);
-
-            // Release the image memory
-            cvReleaseImage( &image );
-        }
-        else
-        {
-            // assume it is a text file containing the list of the image filenames to be processed - one per line //
-            FILE* f = fopen( filename, "rt" );
-            if( f )
-            {
-                char buf[1000+1];
-
-                // Get the line from the file
-                while( fgets( buf, 1000, f ) )
-                {
-
-                    // Remove the spaces if any, and clean up the name
-                    int len = (int)strlen(buf);
-                    while( len > 0 && isspace(buf[len-1]) )
-                        len--;
-                    buf[len] = '\0';
-
-                    // Load the image from the filename present in the buffer
-                    image = cvLoadImage( buf, 1 );
-
-                    // If the image was loaded succesfully, then:
-                    if( image )
-                    {
-                        // Detect and draw the face from the image
-                        detect_and_draw( image );
-                        
-                        // Wait for the user input, and release the memory
-                        cvWaitKey(0);
-                        cvReleaseImage( &image );
-                    }
-                }
-                // Close the file
-                fclose(f);
-            }
-        }
-
     }
     
     // Destroy the window previously created with filename: "result"
@@ -208,25 +165,176 @@ int main( int argc, char** argv )
     return 0;
 }
 
-void drawFaces(CvSeq* faces, IplImage* img) {
+CvRect* findBiggestRectangle (CvSeq *faces) 
+{	
+	CvRect *result = NULL;
+	int largestArea = 0;
+
+	for(int i = 0; i < (faces ? faces->total : 0); i++ )
+    {
+        CvRect* r = (CvRect*)cvGetSeqElem(faces, i);
+		int area = r->width * r->height;
+
+		if (area > largestArea)
+			result = r;
+	}
+
+	return result;
+}
+
+void moveRectangles (CvSeq *faces, CvRect *delta) 
+{
+	cout << "Delta: (" << delta->x << ", " << delta->y << ")\n";
+
+	for(int i = 0; i < (faces ? faces->total : 0); ++i) 
+	{
+		CvRect* r = (CvRect*)cvGetSeqElem(faces, i);
+
+		cout << "Before: (" << r->x << ", " << r->y << ")\n";
+
+		r->x += delta->x;
+		r->y += delta->y;
+
+		cout << "After: (" << r->x << ", " << r->y << ")\n";
+	}
+}
+
+
+
+Mat findCenter(const CvRect &r)
+{
+	Mat m(3, 1, DataType<float>::type);
+
+	double *data = m.ptr<double>(0);
+
+	data[0] = r.x + r.width / 2.0f;
+	data[1] = r.y + r.height / 2.0f;
+	data[2] = 0;
+
+	return m;
+}
+
+float dot(Mat vec1, Mat vec2)
+{
+	double *vec1Data = vec1.ptr<double>(0);
+	double *vec2Data = vec2.ptr<double>(0);
+
+	return vec1Data[0]*vec2Data[0] + vec1Data[1]*vec2Data[1] + vec1Data[2]*vec2Data[2];
+}
+
+double getDegree(Mat &vec1, Mat &vec2)
+{
+	float lengthVec1;
+	double *originalVec1 = vec1.ptr<double>(0);
+	lengthVec1  = sqrt(originalVec1[0]*originalVec1[0] + originalVec1[1]*originalVec1[1] + originalVec1[2]*originalVec1[2]);
+	if(!lengthVec1)
+	{
+		cout << "Etempt to devide by zero";
+		return 0;
+	}
+	cv::Mat normVec1(3, 1, DataType<float>::type);
+	double *newVec1 = normVec1.ptr<double>(0);
+	newVec1[0] = originalVec1[0]/lengthVec1;
+	newVec1[1] = originalVec1[1]/lengthVec1;
+	newVec1[2] = originalVec1[2]/lengthVec1;
+
+
+	float lengthVec2;
+	double *originalVec2 = vec2.ptr<double>(0);
+	lengthVec2  = sqrt(originalVec2[0]*originalVec2[0] + originalVec2[1]*originalVec2[1] + originalVec2[2]*originalVec2[2]);
+	if(!lengthVec2)
+	{
+		cout << "Etempt to devide by zero";
+		return 0;
+	}
+	cv::Mat normVec2(3, 1, DataType<float>::type);
+	double *newVec2 = normVec2.ptr<double>(0);
+	newVec2[0] = originalVec2[0]/lengthVec2;
+	newVec2[1] = originalVec2[1]/lengthVec2;
+	newVec2[2] = originalVec2[2]/lengthVec2;
+
+	double cosDeg = dot(normVec1, normVec2);
+
+	return acos(cosDeg)*180.0/M_PI;
+}
+
+double getDegree(const CvRect &rec1, const CvRect &rec2, const CvRect &rec3)
+{
+	Mat center1 = findCenter(rec1);
+	Mat center2 = findCenter(rec2);
+	Mat center3 = findCenter(rec3);
+
+	Mat vec1 = center2 - center1;
+	Mat vec2 = center3 - center1;
+	return getDegree(vec1, vec2);
+}
+
+void drawEyeLine(CvSeq* eyes, IplImage* img)
+
+{
+	if(eyes && eyes->total == 2)
+	{
+		CvRect* r1 = (CvRect*)cvGetSeqElem( eyes, 0 );
+		CvRect* r2 = (CvRect*)cvGetSeqElem( eyes, 1 );		
+		Mat eye1 = findCenter(*r1);
+		Mat eye2 = findCenter(*r2);
+		CvPoint pt1 = {eye1.ptr<double>(0)[0], eye1.ptr<double>(0)[1]};
+		CvPoint pt2 = {eye2.ptr<double>(0)[0], eye2.ptr<double>(0)[1]};
+		//printf("eyes degree: %f \n", getDegree(*r1, *r2));
+		cvLine(img, pt1, pt2, CV_RGB(0,0,255), 3);
+	}	
+}
+
+void drawRectangle(const CvRect &r, IplImage* img, CvScalar color) {
+	// Create two points to represent the face locations
+    CvPoint pt1, pt2;
+
+    // Find the dimensions of the face,and scale it if necessary
+    pt1.x = r.x;
+    pt2.x = r.x + r.width;
+    pt1.y = r.y;
+    pt2.y = r.y + r.height;
+
+    // Draw the rectangle in the input image
+    cvRectangle(img, pt1, pt2, color, 3);
+}
+
+CvRect* getProbable(CvSeq* seq)
+{
+	int maxN = 0;
+	CvRect* max = NULL;
+	for(int i = 0; i < (seq ? seq->total : 0); i++ )
+    {
+        CvAvgComp* avgComp = (CvAvgComp*)cvGetSeqElem( seq, i );
+		if(maxN < avgComp->neighbors)
+		{
+			maxN = avgComp->neighbors;
+			max = &avgComp->rect;
+		}
+	}
+	return max;
+}
+
+void drawFaces(CvSeq* faces, IplImage* img, CvScalar color) {
 
 	float scale = 1.0f;
 
 	// Create a new image based on the input image
-    IplImage* temp = cvCreateImage( cvSize(img->width/scale,img->height/scale), 8, 3 );
+    //IplImage* temp = cvCreateImage( cvSize(img->width/scale,img->height/scale), 8, 3 );
 
     // Clear the memory storage which was used before
-    cvClearMemStorage( storage );
+    //cvClearMemStorage( storage );
 
 	// Create two points to represent the face locations
     CvPoint pt1, pt2;
 	
 	 // Loop the number of faces found.
+	
     for(int i = 0; i < (faces ? faces->total : 0); i++ )
     {
         // Create a new rectangle for drawing the face
-        CvRect* r = (CvRect*)cvGetSeqElem( faces, i );
-
+        CvAvgComp* avgComp = (CvAvgComp*)cvGetSeqElem( faces, i );
+		CvRect* r = &avgComp->rect;
         // Find the dimensions of the face,and scale it if necessary
         pt1.x = r->x*scale;
         pt2.x = (r->x+r->width)*scale;
@@ -234,15 +342,19 @@ void drawFaces(CvSeq* faces, IplImage* img) {
         pt2.y = (r->y+r->height)*scale;
 
         // Draw the rectangle in the input image
-        cvRectangle( img, pt1, pt2, CV_RGB(255,0,0), 3, 8, 0 );
+        cvRectangle( img, pt1, pt2, color, 3, 8, 0 );
     }
 	
-	// Show the image in the window named "result"
-    cvShowImage( "result", img );
-
+	/*
+	CvRect* r = getProbable(faces);
+	if(r != NULL)
+		drawRectangle(*r,img, color);
+		*/
     // Release the temp image created.
-    cvReleaseImage( &temp );
+    //cvReleaseImage( &temp );
 }
+
+
 
 // Function to detect and draw any faces that is present in an image
 CvSeq* detect_and_draw( IplImage* img )
@@ -252,17 +364,86 @@ CvSeq* detect_and_draw( IplImage* img )
 	CvSeq *faces = 0;
 
     // Find whether the cascade is loaded, to find the faces. If yes, then:
-    if( cascade )
+    if( faceCascade )
     {
        // There can be more than one face in an image. So create a growable sequence of faces.
        // Detect the objects and store them in the sequence
        
-		//faces = cvHaarDetectObjects(img, cascade, storage, 1.1, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 40) );
+		faces = cvHaarDetectObjects(img, faceCascade, storage, 1.1, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 40) );
+		cvClearMemStorage( storage );
 
-		// Switching to these parameters reduced my CPU's load from 70% to 20%
-	   faces = cvHaarDetectObjects(img, cascade, storage, 2, 3, CV_HAAR_SCALE_IMAGE | CV_HAAR_DO_CANNY_PRUNING | CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH, cvSize(30, 30));
+		//CvRect *faceRectangle = findBiggestRectangle(faces);
+		CvRect *faceRectangle = getProbable(faces);
+		if(faceRectangle)
+		{
+			drawRectangle(*faceRectangle, img, CV_RGB(255,0,0));
+			//drawFaces(faces, img);
 
-       drawFaces(faces, img);
+			float widthArea = 0.3f;
+			float heightArea = 0.3f;
+			//CvRect noseROI = {faceRectangle->x + faceRectangle->width * widthArea, faceRectangle->y + faceRectangle->height * heightArea, faceRectangle->width * (1.0f - widthArea), faceRectangle->height * (1.0f - heightArea)};
+			
+			//cvResetImageROI(img);
+			//cvSetImageROI(img, noseROI);
+			
+			//tmp
+			cvSetImageROI(img, *faceRectangle);
+
+			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(10, 20));
+			cvClearMemStorage( storage );
+
+			drawFaces(noseRectangles, img, CV_RGB(0, 255, 0));
+			
+			/*
+			if(noseRectangles && noseRectangles->total)
+				drawRectangle(*(CvRect*)cvGetSeqElem(noseRectangles, 0), img);
+			*/
+
+			//cout << "Number of noses: " << (noseRectangles ? noseRectangles->total : 0) << endl;
+
+			widthArea = 0.0f;
+			heightArea = 0.2f;
+			//CvRect eyesROI = {faceRectangle->x + faceRectangle->width * widthArea, faceRectangle->y + faceRectangle->height * heightArea, faceRectangle->width * (1.0f - widthArea), faceRectangle->height * (1.0f - heightArea)};
+
+			//faceRectangle->y += faceRectangle->height * 0.10f;
+			//faceRectangle->height *= 0.7f;
+			//cvResetImageROI(img);
+			//cvSetImageROI(img, eyesROI);
+
+			leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(50, 25));
+			rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(50, 25));
+			cvClearMemStorage( storage );
+			//eyeRight = cvHaarDetectObjects(img, eyeRightCascade, storage, 1.1, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(50, 25));
+
+			// Switching to these parameters reduced my CPU's load from 70% to 20%
+		    //faces = cvHaarDetectObjects(img, faceCascade, storage, 2, 3, CV_HAAR_SCALE_IMAGE | CV_HAAR_DO_CANNY_PRUNING | CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH, cvSize(30, 30));
+
+			
+		    //cout << "Number of eyes: " << (eyesRectangles ? eyesRectangles->total : 0) << endl;
+
+			
+			//moveRectangles(eyeLeft, faceRectangle);
+			//moveRectangles(eyeRight, faceRectangle);
+			//if(eyesRectangles && noseRectangles && eyesRectangles->total > 1 && noseRectangles->total > 0)
+			//printf("eyes degree: %f \n", getDegree(*(CvRect*)cvGetSeqElem( eyesRectangles, 0 ), *(CvRect*)cvGetSeqElem( eyesRectangles, 1 ),
+			//	*(CvRect*)cvGetSeqElem( noseRectangles, 0 )));
+
+			drawFaces(leftEyeRectangles, img, CV_RGB(0, 0, 255));
+			drawFaces(rightEyeRectangles, img, CV_RGB(255, 255, 0));
+
+			/*
+			if(eyesRectangles && eyesRectangles->total >= 2) {
+				drawRectangle(*(CvRect*)cvGetSeqElem(eyesRectangles, 0), img);
+				drawRectangle(*(CvRect*)cvGetSeqElem(eyesRectangles, 1), img);
+			}
+			*/
+			//drawEyeLine(eyesRectangles, img);
+
+			cvResetImageROI(img);
+		}
+
+		// Show the image in the window named "result"
+		cvShowImage( "result", img );
     }
 
 	return faces;
