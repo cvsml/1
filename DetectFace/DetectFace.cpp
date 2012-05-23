@@ -48,8 +48,6 @@ CvSeq *rightEyeRectangles = 0;
 CvSeq *noseRectangles = 0;
 FPSCalculator fps;
 
-int skipFrames = 1;
-
 // Main function, defines the entry point for the program.
 int main( int argc, char** argv )
 {
@@ -58,7 +56,7 @@ int main( int argc, char** argv )
     CvCapture* capture = 0;
 
     // Images to capture the frame from video or camera or from file
-    IplImage *frame, *frame_copy = 0;
+    IplImage *frame, *frame_copy = 0, *frame_copy_bw = 0;
 
     // Used for calculations
     int optlen = strlen("--cascade=");
@@ -104,8 +102,6 @@ int main( int argc, char** argv )
     cvNamedWindow( "result", 1 );
 
     // Find if the capture is loaded successfully or not.
-
-	int index = 0;
     // If loaded succesfully, then:
     if( capture )
     {
@@ -123,32 +119,30 @@ int main( int argc, char** argv )
                 break;
             
             // Allocate framecopy as the same size of the frame
+			float scale = 1.0f;
             if( !frame_copy ) {
-                frame_copy = cvCreateImage( cvSize(frame->width,frame->height), IPL_DEPTH_8U, frame->nChannels );
-				//frame_copy = cvCreateImage(cvSize(frame->width, frame->height), 8, 1);
+                //frame_copy = cvCreateImage( cvSize(frame->width,frame->height), IPL_DEPTH_8U, frame->nChannels );
+				frame_copy = cvCreateImage(cvSize(frame->width*scale, frame->height*scale), IPL_DEPTH_8U, frame->nChannels);
+				frame_copy_bw = cvCreateImage(cvSize(frame->width*scale, frame->height*scale), IPL_DEPTH_8U, 1);
 				//cvCvtColor(frame, frame_copy, CV_BGR2GRAY);
 			}
 			
             // Check the origin of image. If top left, copy the image frame to frame_copy. 
-            if( frame->origin == IPL_ORIGIN_TL )
-                cvCopy( frame, frame_copy, 0 );
+            //if( frame->origin == IPL_ORIGIN_TL )
+            //    cvCopy( frame, frame_copy, 0 );
             // Else flip and copy the image
-            else
-                cvFlip( frame, frame_copy, 0 );
+           // else
+            //    cvFlip( frame, frame_copy, 0 );
 
-			if(index % skipFrames == 0) {
-				// Call the function to detect and draw the face
-				faceRectangles = detect_and_draw( frame_copy );
-			} else {
-			//	drawFaces(faceRectangles, frame_copy);
-				cvShowImage( "result", frame_copy );
-			}
-			
+			//cvCvtColor(frame, frame_copy, CV_BGR2GRAY);
+			cvResize(frame, frame_copy, scale);
+			//cvCvtColor(frame_copy, frame_copy_bw, CV_BGR2GRAY);
+			faceRectangles = detect_and_draw(frame_copy);
+
             // Wait for a while before proceeding to the next frame
             if(cvWaitKey(1) >= 0 )
                 break;
 			
-			index++;
 			fps.addFrame();
 			printf("FPS: %d\n", fps.getFPS());
         }
@@ -198,8 +192,6 @@ void moveRectangles (CvSeq *faces, CvRect *delta)
 		cout << "After: (" << r->x << ", " << r->y << ")\n";
 	}
 }
-
-
 
 Mat findCenter(const CvRect &r)
 {
@@ -270,7 +262,6 @@ double getDegree(const CvRect &rec1, const CvRect &rec2, const CvRect &rec3)
 }
 
 void drawEyeLine(CvSeq* eyes, IplImage* img)
-
 {
 	if(eyes && eyes->total == 2)
 	{
@@ -361,14 +352,16 @@ void drawFaces(CvSeq* faces, IplImage* img, CvScalar color) {
 // Function to detect and draw any faces that is present in an image
 CvSeq* detect_and_draw( IplImage* img )
 {
-	int scale = 1;
-
 	CvSeq *faces = 0;
+
+	CvRect *lastFaceRectangle = 0;
 
     // Find whether the cascade is loaded, to find the faces. If yes, then:
     if( faceCascade )
     {      
-		faces = cvHaarDetectObjects(img, faceCascade, storage, 1.1, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 40) );
+		if(lastFaceRectangle)
+			cvSetImageROI(img, *lastFaceRectangle);
+		faces = cvHaarDetectObjects(img, faceCascade, storage, 1.5, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(100, 100) );
 		//cvClearMemStorage( storage );
 
 		//CvRect *faceRectangle = findBiggestRectangle(faces);
@@ -402,13 +395,13 @@ CvSeq* detect_and_draw( IplImage* img )
 			CvRect noseROI = {faceRectangle->x + faceRectangle->width * noseLeft, faceRectangle->y + faceRectangle->height * noseTop, faceRectangle->width * (noseRight - noseLeft), faceRectangle->height * (noseBottom - noseTop)};
 			
 			cvResetImageROI(img);
-			drawRectangle(&leftEyeROI, img, CV_RGB(175, 175, 175));
-			drawRectangle(&rightEyeROI, img, CV_RGB(175, 0, 175));
-			drawRectangle(&noseROI, img, CV_RGB(0, 175, 175));
+			//drawRectangle(&leftEyeROI, img, CV_RGB(175, 175, 175));
+			//drawRectangle(&rightEyeROI, img, CV_RGB(175, 0, 175));
+			//drawRectangle(&noseROI, img, CV_RGB(0, 175, 175));
 
 			cvResetImageROI(img);
 			cvSetImageROI(img, noseROI);
-			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(10, 20));
+			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.5, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(20, 20));
 			drawRectangle(getProbable(noseRectangles), img, CV_RGB(0, 0, 255));
 
 			//cvResetImageROI(img);
@@ -420,18 +413,23 @@ CvSeq* detect_and_draw( IplImage* img )
 			cvResetImageROI(img);
 			//cvSetImageROI(img, *faceRectangle);
 			cvSetImageROI(img, leftEyeROI);
-			leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(50, 25));
-			cout << "Found left rectangles: " << leftEyeRectangles->total << "\n";
+			leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.5, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 20));
+			//cout << "Found left rectangles: " << leftEyeRectangles->total << "\n";
 			drawRectangle(getProbable(leftEyeRectangles), img, CV_RGB(0, 255, 0));
 
 			cvResetImageROI(img);
 			//cvSetImageROI(img, *faceRectangle);
 			cvSetImageROI(img, rightEyeROI);
-			rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.15, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(50, 25));
+			rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.5, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 20));
 			//cvClearMemStorage( storage );
 			drawRectangle(getProbable(rightEyeRectangles), img, CV_RGB(255, 0, 0));
 
 			cvResetImageROI(img);
+			faceRectangle->x *= 0.9;
+			faceRectangle->y *= 0.9;
+			faceRectangle->height *= 1.1;
+			faceRectangle->width *= 1.1;
+			lastFaceRectangle = faceRectangle;
 		}
 
 		// Show the image in the window named "result"
