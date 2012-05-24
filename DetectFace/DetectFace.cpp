@@ -33,7 +33,7 @@ static CvHaarClassifierCascade* rightEyeCascade = 0;
 static CvHaarClassifierCascade* noseCascade = 0;
 
 // Function prototype for detecting and drawing an object from an image
-CvSeq* detect_and_draw( IplImage* image );
+CvSeq* detect_and_draw(IplImage* image);
 void drawFaces(CvSeq* faces, IplImage* img, CvScalar color);
 
 // Create a string that contains the cascade name
@@ -193,71 +193,46 @@ void moveRectangles (CvSeq *faces, CvRect *delta)
 	}
 }
 
-Mat findCenter(const CvRect &r)
+Vec2f findCenter(const CvRect &r)
 {
-	Mat m(3, 1, DataType<float>::type);
-
-	double *data = m.ptr<double>(0);
+	Vec2f data;
 
 	data[0] = r.x + r.width / 2.0f;
 	data[1] = r.y + r.height / 2.0f;
-	data[2] = 0;
 
-	return m;
+	return data;
 }
 
-float dot(Mat vec1, Mat vec2)
+double getDegree(Vec2f &vec1, Vec2f &vec2)
 {
-	double *vec1Data = vec1.ptr<double>(0);
-	double *vec2Data = vec2.ptr<double>(0);
-
-	return vec1Data[0]*vec2Data[0] + vec1Data[1]*vec2Data[1] + vec1Data[2]*vec2Data[2];
-}
-
-double getDegree(Mat &vec1, Mat &vec2)
-{
-	float lengthVec1;
-	double *originalVec1 = vec1.ptr<double>(0);
-	lengthVec1  = sqrt(originalVec1[0]*originalVec1[0] + originalVec1[1]*originalVec1[1] + originalVec1[2]*originalVec1[2]);
-	if(!lengthVec1)
+	if(norm(vec1) == 0.0)
 	{
-		cout << "Etempt to devide by zero";
+		cout << "Attempted to divide vec1 by zero in getDegree";
 		return 0;
 	}
-	cv::Mat normVec1(3, 1, DataType<float>::type);
-	double *newVec1 = normVec1.ptr<double>(0);
-	newVec1[0] = originalVec1[0]/lengthVec1;
-	newVec1[1] = originalVec1[1]/lengthVec1;
-	newVec1[2] = originalVec1[2]/lengthVec1;
 
+	normalize(vec1, vec1);
 
-	float lengthVec2;
-	double *originalVec2 = vec2.ptr<double>(0);
-	lengthVec2  = sqrt(originalVec2[0]*originalVec2[0] + originalVec2[1]*originalVec2[1] + originalVec2[2]*originalVec2[2]);
-	if(!lengthVec2)
+	if(norm(vec2) == 0.0)
 	{
-		cout << "Etempt to devide by zero";
+		cout << "Attempted to divide vec2 by zero in getDegree";
 		return 0;
 	}
-	cv::Mat normVec2(3, 1, DataType<float>::type);
-	double *newVec2 = normVec2.ptr<double>(0);
-	newVec2[0] = originalVec2[0]/lengthVec2;
-	newVec2[1] = originalVec2[1]/lengthVec2;
-	newVec2[2] = originalVec2[2]/lengthVec2;
 
-	double cosDeg = dot(normVec1, normVec2);
+	normalize(vec2, vec2);
 
-	return acos(cosDeg)*180.0/M_PI;
+	return acos(vec1.dot(vec2)) * 180.0 / M_PI;
 }
 
 double getDegree(const CvRect &rec1, const CvRect &rec2, const CvRect &rec3)
 {
-	Mat center1 = findCenter(rec1);
-	Mat center2 = findCenter(rec2);
-	Mat center3 = findCenter(rec3);
+	Vec2f center1 = findCenter(rec1);
+	Vec2f center2 = findCenter(rec2);
+	Vec2f center3 = findCenter(rec3);
 
-	Mat vec1 = center2 - center1;
-	Mat vec2 = center3 - center1;
+	Vec2f vec1 = center2 - center1;
+	Vec2f vec2 = center3 - center1;
+
 	return getDegree(vec1, vec2);
 }
 
@@ -267,12 +242,9 @@ void drawEyeLine(CvSeq* eyes, IplImage* img)
 	{
 		CvRect* r1 = (CvRect*)cvGetSeqElem( eyes, 0 );
 		CvRect* r2 = (CvRect*)cvGetSeqElem( eyes, 1 );		
-		Mat eye1 = findCenter(*r1);
-		Mat eye2 = findCenter(*r2);
-		CvPoint pt1 = {eye1.ptr<double>(0)[0], eye1.ptr<double>(0)[1]};
-		CvPoint pt2 = {eye2.ptr<double>(0)[0], eye2.ptr<double>(0)[1]};
-		//printf("eyes degree: %f \n", getDegree(*r1, *r2));
-		cvLine(img, pt1, pt2, CV_RGB(0,0,255), 3);
+		Vec2f eye1 = findCenter(*r1);
+		Vec2f eye2 = findCenter(*r2);
+		cvLine(img, Point(eye1), Point(eye2), CV_RGB(0,0,255), 3);
 	}	
 }
 
@@ -281,17 +253,8 @@ void drawRectangle(CvRect *r, IplImage* img, CvScalar color) {
 	if(r == NULL)
 		return;
 
-	// Create two points to represent the face locations
-    CvPoint pt1, pt2;
-
-    // Find the dimensions of the face,and scale it if necessary
-    pt1.x = r->x;
-    pt2.x = r->x + r->width;
-    pt1.y = r->y;
-    pt2.y = r->y + r->height;
-
     // Draw the rectangle in the input image
-    cvRectangle(img, pt1, pt2, color, 3);
+    cvRectangle(img, Point(r->x, r->y), Point(r->x + r->width, r->y + r->height), color, 3);
 }
 
 CvRect* getProbable(CvSeq* seq)
@@ -337,7 +300,7 @@ void drawFaces(CvSeq* faces, IplImage* img, CvScalar color) {
         pt2.y = (r->y+r->height)*scale;
 
         // Draw the rectangle in the input image
-        cvRectangle( img, pt1, pt2, color, 3, 8, 0 );
+        cvRectangle(img, pt1, pt2, color, 3, 8, 0);
     }
 	
 	/*
