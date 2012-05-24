@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DetectedShape.h" />
+    <ClInclude Include="Face.h" />
     <ClInclude Include="ObjectDetector.h" />
     <ClInclude Include="FPSCalculator.h" />
     <ClInclude Include="stdafx.h" />
@@ -90,8 +91,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CamShift.cpp" />
+    <ClCompile Include="DetectedShape.cpp" />
     <ClCompile Include="DetectFace.cpp" />
     <ClCompile Include="DetectFace2.cpp" />
+    <ClCompile Include="Face.cpp" />
     <ClCompile Include="FPSCalculator.cpp" />
     <ClCompile Include="ObjectDetector.cpp" />
     <ClCompile Include="stdafx.cpp">

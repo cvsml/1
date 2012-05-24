@@ -2,21 +2,19 @@
 #define DETECTED_SHAPE_H
 
 
+
+
 class DetectedShape {
 private:
 	Rect rect;
+	Vec2f center;
 
 public:
 	DetectedShape(Rect);
 	~DetectedShape();
 
-	std::vector<Rect> detect(Mat&);
-	std::vector<Rect> detect(Mat&, Rect&);
-
-	Rect detectLikely(Mat&);
-	Rect detectLikely(Mat&, Rect&);
-
-	static Rect getLargest(std::vector<Rect>&);
+	Rect getRect();
+	Vec2f getCenter();
 };
 
 #endif
