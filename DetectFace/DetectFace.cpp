@@ -207,7 +207,7 @@ double getDegree(Vec2f &vec1, Vec2f &vec2)
 {
 	if(norm(vec1) == 0.0)
 	{
-		cout << "Etempt to devide by zero";
+		cout << "Attempted to divide vec1 by zero in getDegree";
 		return 0;
 	}
 
@@ -215,7 +215,7 @@ double getDegree(Vec2f &vec1, Vec2f &vec2)
 
 	if(norm(vec2) == 0.0)
 	{
-		cout << "Etempt to devide by zero";
+		cout << "Attempted to divide vec2 by zero in getDegree";
 		return 0;
 	}
 
@@ -324,7 +324,7 @@ CvSeq* detect_and_draw( IplImage* img )
     {      
 		if(lastFaceRectangle)
 			cvSetImageROI(img, *lastFaceRectangle);
-		faces = cvHaarDetectObjects(img, faceCascade, storage, 1.1, 3);
+		faces = cvHaarDetectObjects(img, faceCascade, storage, 1.3, 3);
 		//cvClearMemStorage( storage );
 
 		//CvRect *faceRectangle = findBiggestRectangle(faces);
@@ -364,7 +364,7 @@ CvSeq* detect_and_draw( IplImage* img )
 
 			cvResetImageROI(img);
 			cvSetImageROI(img, noseROI);
-			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.1, 3);
+			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.3, 3);
 			drawRectangle(getProbable(noseRectangles), img, CV_RGB(0, 0, 255));
 
 			//cvResetImageROI(img);
@@ -376,14 +376,14 @@ CvSeq* detect_and_draw( IplImage* img )
 			cvResetImageROI(img);
 			//cvSetImageROI(img, *faceRectangle);
 			cvSetImageROI(img, leftEyeROI);
-			leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.1, 3);
+			leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.3, 3);
 			//cout << "Found left rectangles: " << leftEyeRectangles->total << "\n";
 			drawRectangle(getProbable(leftEyeRectangles), img, CV_RGB(0, 255, 0));
 
 			cvResetImageROI(img);
 			//cvSetImageROI(img, *faceRectangle);
 			cvSetImageROI(img, rightEyeROI);
-			rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.1, 3);
+			rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.3, 3);
 			//cvClearMemStorage( storage );
 			drawRectangle(getProbable(rightEyeRectangles), img, CV_RGB(255, 0, 0));
 
