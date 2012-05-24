@@ -93,7 +93,6 @@
     <ClCompile Include="CamShift.cpp" />
     <ClCompile Include="DetectedShape.cpp" />
     <ClCompile Include="DetectFace.cpp" />
-    <ClCompile Include="DetectFace2.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="FPSCalculator.cpp" />
     <ClCompile Include="ObjectDetector.cpp" />

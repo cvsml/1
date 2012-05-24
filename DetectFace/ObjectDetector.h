@@ -8,12 +8,12 @@ private:
 	double scaleFactor;
 	int numNeighbors;
 	int flags;
-	bool isValid;
+	bool valid;
 	CvSize minSize;
 	CvSize maxSize;
 
 public:
-	ObjectDetector(String, double, int, int, Size, Size);
+	ObjectDetector(string xmlPath, double scaleFactor = 1.1, int numNeigbors = 3, int flags = CV_HAAR_SCALE_IMAGE, Size minSize = Size(30,30), Size maxSize = Size());
 	~ObjectDetector();
 
 	std::vector<Rect> detect(Mat&);
@@ -23,6 +23,8 @@ public:
 	Rect detectLikely(Mat&, Rect&);
 
 	static Rect getLargest(std::vector<Rect>&);
+
+	bool isValid();
 };
 
 #endif

@@ -2,9 +2,9 @@
 #include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
-
 
 using namespace std;
 using namespace cv;
@@ -39,12 +39,12 @@ void Face::setRightArea(DetectedShape* newRightEyeArea)
 
 double Face::getLeftAngle()
 {
-	return getDegree(rightEyeArea->getCenter(),leftEyeArea->getCenter(),noseArea->getCenter());
+	return getDegree(rightEyeArea->getCenter(), leftEyeArea->getCenter(), noseArea->getCenter());
 }
 
 double Face::getRightAngle()
 {
-	return getDegree(leftEyeArea->getCenter(), rightEyeArea->getCenter(),noseArea->getCenter());
+	return getDegree(leftEyeArea->getCenter(), rightEyeArea->getCenter(), noseArea->getCenter());
 }
 
 double Face::getDegree(Vec2f &vec1, Vec2f &vec2)

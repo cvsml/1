@@ -44,9 +44,6 @@
     <ClCompile Include="DetectFace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DetectFace2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CamShift.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
