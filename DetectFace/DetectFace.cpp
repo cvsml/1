@@ -349,6 +349,14 @@ void drawFaces(CvSeq* faces, IplImage* img, CvScalar color) {
     //cvReleaseImage( &temp );
 }
 
+Point2f getCenter(CvRect* rec)
+{
+	if(rec)
+		return Point2f(rec->x + rec->width/2.0f,rec->y + rec->height/2.0f);
+	else
+		return NULL;
+}
+
 // Function to detect and draw any faces that is present in an image
 CvSeq* detect_and_draw( IplImage* img )
 {
@@ -361,7 +369,7 @@ CvSeq* detect_and_draw( IplImage* img )
     {      
 		if(lastFaceRectangle)
 			cvSetImageROI(img, *lastFaceRectangle);
-		faces = cvHaarDetectObjects(img, faceCascade, storage, 1.5, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(100, 100) );
+		faces = cvHaarDetectObjects(img, faceCascade, storage, 1.3, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(100, 100) );
 		//cvClearMemStorage( storage );
 
 		//CvRect *faceRectangle = findBiggestRectangle(faces);
@@ -401,8 +409,9 @@ CvSeq* detect_and_draw( IplImage* img )
 
 			cvResetImageROI(img);
 			cvSetImageROI(img, noseROI);
-			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.5, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(20, 20));
-			drawRectangle(getProbable(noseRectangles), img, CV_RGB(0, 0, 255));
+			noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.3, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(20, 20));
+			CvRect* noseB = getProbable(noseRectangles); 
+			drawRectangle(noseB, img, CV_RGB(0, 0, 255));
 
 			//cvResetImageROI(img);
 			//cvSetImageROI(img, *faceRectangle);
@@ -413,16 +422,25 @@ CvSeq* detect_and_draw( IplImage* img )
 			cvResetImageROI(img);
 			//cvSetImageROI(img, *faceRectangle);
 			cvSetImageROI(img, leftEyeROI);
-			leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.5, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 20));
+			leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.3, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 20));
 			//cout << "Found left rectangles: " << leftEyeRectangles->total << "\n";
-			drawRectangle(getProbable(leftEyeRectangles), img, CV_RGB(0, 255, 0));
+			//drawRectangle(getProbable(leftEyeRectangles), img, CV_RGB(0, 255, 0));
+			CvRect* leftEyeB = findBiggestRectangle(leftEyeRectangles); 
+			drawRectangle(leftEyeB, img, CV_RGB(0, 255, 0));
+			Point2f leftEyeCenter = getCenter(leftEyeB);
+			if(leftEyeB)
+				cout << "left eye center: x=" << leftEyeCenter.x << ", y=" << leftEyeCenter.y;
 
 			cvResetImageROI(img);
 			//cvSetImageROI(img, *faceRectangle);
 			cvSetImageROI(img, rightEyeROI);
-			rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.5, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 20));
+			rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.3, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 20));
 			//cvClearMemStorage( storage );
-			drawRectangle(getProbable(rightEyeRectangles), img, CV_RGB(255, 0, 0));
+			//drawRectangle(getProbable(rightEyeRectangles), img, CV_RGB(255, 0, 0));
+			CvRect* rightEyeB = findBiggestRectangle(rightEyeRectangles); 
+			drawRectangle(rightEyeB, img, CV_RGB(255, 0, 0));
+			//Point2f rightEyeCenter = getCenter(rightEyeB);
+			//cout << "right eye center: x=" << rightEyeCenter.x << ", y=" << leftEyeCenter.y;
 
 			cvResetImageROI(img);
 			faceRectangle->x *= 0.9;
