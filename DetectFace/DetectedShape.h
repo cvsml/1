@@ -15,9 +15,11 @@ private:
 
 public:
 	DetectedShape(Rect);
+	DetectedShape();
 	~DetectedShape();
 
 	Rect getRect();
+	void setRect(const Rect &rect);
 	Vec2f getCenter();
 	void draw(IplImage *img, CvScalar color);
 	bool isValid();

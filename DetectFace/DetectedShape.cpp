@@ -3,9 +3,17 @@
 
 DetectedShape::DetectedShape(Rect rect)
 {
-	this->rect = rect;
-	center = Vec2f(rect.x + rect.width / 2.0f, rect.y + rect.height / 2.0f);
-	valid = rect.size().area() != 0;
+	setRect(rect);
+}
+
+DetectedShape::DetectedShape()
+{
+	rect.x = 0;
+	rect.y = 0;
+	rect.width = 0;
+	rect.height = 0;
+	center = Vec2f(0, 0);
+	valid = false;
 }
 
 DetectedShape::~DetectedShape()
@@ -16,6 +24,13 @@ DetectedShape::~DetectedShape()
 Rect DetectedShape::getRect()
 {
 	return rect;
+}
+
+void DetectedShape::setRect(const Rect &rect)
+{
+	this->rect = rect;
+	valid = rect.size().area() != 0;
+	center = Vec2f(rect.x + rect.width / 2.0f, rect.y + rect.height / 2.0f);
 }
 
 Vec2f DetectedShape::getCenter()

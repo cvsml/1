@@ -22,6 +22,7 @@
 #include "FPSCalculator.h"
 #include "DetectedShape.h"
 #include "ObjectDetector.h"
+#include "Face.h"
 
 using namespace std;
 using namespace cv;
@@ -36,6 +37,8 @@ ObjectDetector faceDetector("haarcascade_frontalface_alt2.xml", 1.3f);
 ObjectDetector leftEyeDetector("haarcascade_mcs_lefteye.xml", 1.3f);
 ObjectDetector rightEyeDetector("haarcascade_mcs_righteye.xml", 1.3f);
 ObjectDetector noseDetector("haarcascade_mcs_nose.xml", 1.3f);
+
+Face faceContainer;
 
 // Main function, defines the entry point for the program.
 int main(int argc, char** argv)
@@ -118,25 +121,6 @@ int main(int argc, char** argv)
 }
 
 /*
-void moveRectangles (CvSeq *faces, CvRect *delta) 
-{
-	cout << "Delta: (" << delta->x << ", " << delta->y << ")\n";
-
-	for(int i = 0; i < (faces ? faces->total : 0); ++i) 
-	{
-		CvRect* r = (CvRect*)cvGetSeqElem(faces, i);
-
-		cout << "Before: (" << r->x << ", " << r->y << ")\n";
-
-		r->x += delta->x;
-		r->y += delta->y;
-
-		cout << "After: (" << r->x << ", " << r->y << ")\n";
-	}
-}
-*/
-
-/*
 void drawEyeLine(CvSeq* eyes, IplImage* img)
 {
 	if(eyes && eyes->total == 2)
@@ -150,172 +134,51 @@ void drawEyeLine(CvSeq* eyes, IplImage* img)
 }
 */
 
-/*
-CvRect* getProbable(CvSeq* seq)
-{
-	int maxN = 0;
-	CvRect* max = NULL;
-	for(int i = 0; i < (seq ? seq->total : 0); i++ )
-    {
-        CvAvgComp* avgComp = (CvAvgComp*)cvGetSeqElem( seq, i );
-		if(maxN < avgComp->neighbors)
-		{
-			maxN = avgComp->neighbors;
-			max = &avgComp->rect;
-		}
-	}
-	return max;
-}
-*/
-
-/*
-void drawFaces(CvSeq* faces, IplImage* img, CvScalar color) {
-
-	float scale = 1.0f;
-
-	// Create a new image based on the input image
-    //IplImage* temp = cvCreateImage( cvSize(img->width/scale,img->height/scale), 8, 3 );
-
-    // Clear the memory storage which was used before
-    //cvClearMemStorage( storage );
-
-	// Create two points to represent the face locations
-    CvPoint pt1, pt2;
-	
-	 // Loop the number of faces found.
-	
-    for(int i = 0; i < (faces ? faces->total : 0); i++ )
-    {
-        // Create a new rectangle for drawing the face
-        CvAvgComp* avgComp = (CvAvgComp*)cvGetSeqElem( faces, i );
-		CvRect* r = &avgComp->rect;
-        // Find the dimensions of the face,and scale it if necessary
-        pt1.x = r->x*scale;
-        pt2.x = (r->x+r->width)*scale;
-        pt1.y = r->y*scale;
-        pt2.y = (r->y+r->height)*scale;
-
-        // Draw the rectangle in the input image
-        cvRectangle(img, pt1, pt2, color, 3, 8, 0);
-    }
-	
-    // Release the temp image created.
-    //cvReleaseImage( &temp );
-}
-*/
-
 // Function to detect and draw any faces that is present in an image
 void detect_and_draw(IplImage *img)
 {
-	Rect *lastFaceRectangle = NULL;
-	Rect *faceRectangle = NULL;
-	
-	unique_ptr<DetectedShape> leftEye;
-	unique_ptr<DetectedShape> rightEye;
-	unique_ptr<DetectedShape> nose;
+	//Rect lastFaceRectangle;
+	Rect faceRectangle;
 
-	DetectedShape *facePointer = NULL;
-
+	/*
 	if(lastFaceRectangle)
-		facePointer = new DetectedShape(faceDetector.detectLikely(Mat(img), *lastFaceRectangle));
+		faceRectangle = faceDetector.detectLikely(Mat(img), *lastFaceRectangle);
 	else
-		facePointer = new DetectedShape(faceDetector.detectLikely(Mat(img)));
+		faceRectangle = faceDetector.detectLikely(Mat(img));
+	*/
 
-	unique_ptr<DetectedShape> face(facePointer);
+	faceContainer.getFaceArea()->setRect(faceDetector.detectLikely(Mat(img)));
+	faceRectangle = faceContainer.getFaceArea()->getRect();
 
-	if(face->isValid())
+	if(faceContainer.getFaceArea()->isValid())
 	{
-		face->draw(img, CV_RGB(255, 255, 255));
-
-		//float widthArea = 0.3f;
-		//float heightArea = 0.3f;
-		//CvRect noseROI = {faceRectangle->x + faceRectangle->width * widthArea, faceRectangle->y + faceRectangle->height * heightArea, faceRectangle->width * (1.0f - widthArea), faceRectangle->height * (1.0f - heightArea)};
-			
-		//cvResetImageROI(img);
-		//cvSetImageROI(img, noseROI);
-			
-		//cvSetImageROI(img, *faceRectangle);
-
-		//cvClearMemStorage( storage );
-
-		//cvResetImageROI(img);
-		//cvSetImageROI(img, *faceRectangle);
-			
-
-
-		faceRectangle = &face->getRect();
+		faceContainer.getFaceArea()->draw(img, CV_RGB(255, 255, 255));	
+		
 		float top = 0.25f, bottom = 0.55f, left = 0.1f, right = 0.9f;
 		float noseLeft = 0.3f, noseRight = 0.7f, noseTop = 0.5f, noseBottom = 0.8f;
 
-		Rect leftEyeROI(Point(faceRectangle->x + faceRectangle->width * left, faceRectangle->y + faceRectangle->height * top), Point(faceRectangle->width * (right - left) / 2.0f, faceRectangle->height * (bottom - top)));
-		Rect rightEyeROI(Point(faceRectangle->x + faceRectangle->width * 0.5f, faceRectangle->y + faceRectangle->height * top), Point(faceRectangle->width * (right - left) / 2.0f, faceRectangle->height * (bottom - top)));
-		Rect noseROI(Point(faceRectangle->x + faceRectangle->width * noseLeft, faceRectangle->y + faceRectangle->height * noseTop), Point(faceRectangle->width * (noseRight - noseLeft), faceRectangle->height * (noseBottom - noseTop)));
-			
-		//cvResetImageROI(img);
-		//drawRectangle(&leftEyeROI, img, CV_RGB(175, 175, 175));
-		//drawRectangle(&rightEyeROI, img, CV_RGB(175, 0, 175));
-		//drawRectangle(&noseROI, img, CV_RGB(0, 175, 175));
-
-		//cvResetImageROI(img);
-		//cvSetImageROI(img, noseROI);
+		Rect leftEyeROI(Point(faceRectangle.x + faceRectangle.width * left, faceRectangle.y + faceRectangle.height * top), Point(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
+		Rect rightEyeROI(Point(faceRectangle.x + faceRectangle.width * 0.5f, faceRectangle.y + faceRectangle.height * top), Point(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
+		Rect noseROI(Point(faceRectangle.x + faceRectangle.width * noseLeft, faceRectangle.y + faceRectangle.height * noseTop), Point(faceRectangle.width * (noseRight - noseLeft), faceRectangle.height * (noseBottom - noseTop)));
 		
-		unique_ptr<DetectedShape> nose(new DetectedShape(noseDetector.detectLikely(Mat(img), noseROI)));
-		nose->draw(img, CV_RGB(0, 0, 255));
+		faceContainer.getNoseArea()->setRect(noseDetector.detectLikely(Mat(img), noseROI));
+		faceContainer.getNoseArea()->draw(img, CV_RGB(0, 0, 255));
+
+		faceContainer.getLeftEyeArea()->setRect(leftEyeDetector.detectLikely(Mat(img), leftEyeROI));
+		faceContainer.getLeftEyeArea()->draw(img, CV_RGB(0, 255, 0));
+
+		faceContainer.getRightEyeArea()->setRect(rightEyeDetector.detectLikely(Mat(img), rightEyeROI));
+		faceContainer.getRightEyeArea()->draw(img, CV_RGB(255, 0, 0));
 
 		/*
-		noseRectangles = cvHaarDetectObjects(img, noseCascade, storage, 1.3, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(20, 20));
-		CvRect* noseB = getProbable(noseRectangles); 
-		drawRectangle(noseB, img, CV_RGB(0, 0, 255));
-		*/
-
-		//cvResetImageROI(img);
-		//cvSetImageROI(img, *faceRectangle);
-
-		//faceRectangle->y += faceRectangle->height * 0.10f;
-		//faceRectangle->height *= 0.7f;
-		//cvResetImageROI(img);
-		//cvResetImageROI(img);
-		//cvSetImageROI(img, *faceRectangle);
-		//cvSetImageROI(img, leftEyeROI);
-		//leftEyeRectangles = cvHaarDetectObjects(img, leftEyeCascade, storage, 1.3, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 20));
-		//cout << "Found left rectangles: " << leftEyeRectangles->total << "\n";
-		//drawRectangle(getProbable(leftEyeRectangles), img, CV_RGB(0, 255, 0));
-		//CvRect* leftEyeB = findBiggestRectangle(leftEyeRectangles); 
-		//drawRectangle(leftEyeB, img, CV_RGB(0, 255, 0));
-
-		unique_ptr<DetectedShape> leftEye(new DetectedShape(leftEyeDetector.detectLikely(Mat(img), leftEyeROI)));
-		leftEye->draw(img, CV_RGB(0, 255, 0));
-
-		/*
-		Point2f leftEyeCenter = getCenter(leftEyeB);
-		if(leftEyeB)
-			cout << "left eye center: x=" << leftEyeCenter.x << ", y=" << leftEyeCenter.y;
-		*/
-
-		//cvResetImageROI(img);
-		//cvSetImageROI(img, *faceRectangle);
-		//cvSetImageROI(img, rightEyeROI);
-		//rightEyeRectangles = cvHaarDetectObjects(img, rightEyeCascade, storage, 1.3, 3, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 20));
-		//cvClearMemStorage( storage );
-		//drawRectangle(getProbable(rightEyeRectangles), img, CV_RGB(255, 0, 0));
-		//CvRect* rightEyeB = findBiggestRectangle(rightEyeRectangles); 
-		//drawRectangle(rightEyeB, img, CV_RGB(255, 0, 0));
-		//Point2f rightEyeCenter = getCenter(rightEyeB);
-		//cout << "right eye center: x=" << rightEyeCenter.x << ", y=" << leftEyeCenter.y;
-
-		unique_ptr<DetectedShape> rightEye(new DetectedShape(rightEyeDetector.detectLikely(Mat(img), rightEyeROI)));
-		rightEye->draw(img, CV_RGB(255, 0, 0));
-
-		//cvResetImageROI(img);
-
 		faceRectangle->x *= 0.9;
 		faceRectangle->y *= 0.9;
 		faceRectangle->height *= 1.1;
 		faceRectangle->width *= 1.1;
 		lastFaceRectangle = faceRectangle;
+		*/
 	}
 
 	// Show the image in the window named "result"
 	cvShowImage("Simon", img);
-	//cvClearMemStorage( storage );
 }

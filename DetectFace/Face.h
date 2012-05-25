@@ -1,26 +1,24 @@
 #ifndef FACE_H
 #define FACE_H
 
-
-
 class Face {
 private:
-	DetectedShape* faceArea;
-	DetectedShape* noseArea;
-	DetectedShape* leftEyeArea;
-	DetectedShape* rightEyeArea;
+	std::shared_ptr<DetectedShape> faceArea;
+	std::shared_ptr<DetectedShape> noseArea;
+	std::shared_ptr<DetectedShape> leftEyeArea;
+	std::shared_ptr<DetectedShape> rightEyeArea;
 
 	double getDegree(Vec2f&, Vec2f&);
 	double getDegree(Vec2f&, Vec2f&, Vec2f&);
 
 public:
-	Face(DetectedShape*, DetectedShape*, DetectedShape*, DetectedShape*);
+	Face();
 	~Face();
 
-	void setFaceArea(DetectedShape*);
-	void setNoseArea(DetectedShape*);
-	void setLeftEyeArea(DetectedShape*);
-	void setRightArea(DetectedShape*);
+	std::shared_ptr<DetectedShape> getFaceArea();
+	std::shared_ptr<DetectedShape> getNoseArea();
+	std::shared_ptr<DetectedShape> getLeftEyeArea();
+	std::shared_ptr<DetectedShape> getRightEyeArea();
 
 	double getLeftAngle();
 	double getRightAngle();

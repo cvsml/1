@@ -10,31 +10,39 @@ using namespace std;
 using namespace cv;
 
 #include "DetectedShape.h"
-#include "Face.h";
+#include "Face.h"
 
-Face::Face(DetectedShape* faceArea, DetectedShape* noseArea, DetectedShape* leftEyeArea, DetectedShape* rightEyeArea)
+Face::Face()
 {
-	this->faceArea = faceArea;
-	this->noseArea = noseArea;
-	this->leftEyeArea = leftEyeArea;
-	this->rightEyeArea = rightEyeArea;
+	faceArea = shared_ptr<DetectedShape>(new DetectedShape());
+	noseArea = shared_ptr<DetectedShape>(new DetectedShape());
+	leftEyeArea = shared_ptr<DetectedShape>(new DetectedShape());
+	rightEyeArea = shared_ptr<DetectedShape>(new DetectedShape());
 }
 
-void Face::setFaceArea(DetectedShape* newFaceArea)
+Face::~Face()
 {
-	faceArea = newFaceArea;
+
 }
-void Face::setNoseArea(DetectedShape* newNoseArea)
+
+std::shared_ptr<DetectedShape> Face::getFaceArea()
 {
-	noseArea = newNoseArea;
+	return faceArea;
 }
-void Face::setLeftEyeArea(DetectedShape* newLeftEyeArea)
+
+std::shared_ptr<DetectedShape> Face::getNoseArea()
 {
-	leftEyeArea = newLeftEyeArea;
+	return noseArea;
 }
-void Face::setRightArea(DetectedShape* newRightEyeArea)
+
+std::shared_ptr<DetectedShape> Face::getLeftEyeArea()
 {
-	rightEyeArea = newRightEyeArea;
+	return leftEyeArea;
+}
+
+std::shared_ptr<DetectedShape> Face::getRightEyeArea()
+{
+	return rightEyeArea;
 }
 
 double Face::getLeftAngle()
