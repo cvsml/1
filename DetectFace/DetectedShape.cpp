@@ -28,9 +28,13 @@ Rect DetectedShape::getRect()
 
 void DetectedShape::setRect(const Rect &rect)
 {
-	this->rect = rect;
 	valid = rect.size().area() != 0;
-	center = Vec2f(rect.x + rect.width / 2.0f, rect.y + rect.height / 2.0f);
+
+	if(valid)
+	{
+		this->rect = rect;	
+		center = Vec2f(rect.x + rect.width / 2.0f, rect.y + rect.height / 2.0f);
+	}
 }
 
 Vec2f DetectedShape::getCenter()
@@ -40,7 +44,7 @@ Vec2f DetectedShape::getCenter()
 
 void DetectedShape::draw(IplImage *img, CvScalar color)
 {
-	if(valid)
+	//if(valid)
 		cvRectangle(img, rect.tl(), rect.br(), color, 3);
 }
 

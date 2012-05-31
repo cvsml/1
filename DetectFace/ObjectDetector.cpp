@@ -48,8 +48,13 @@ Rect ObjectDetector::detectLikely(Mat &image)
 
 Rect ObjectDetector::detectLikely(Mat &image, Rect &ROI)
 {
-	Mat roiImg = Mat(image, ROI);
-	return detectLikely(roiImg);
+	if(ROI.width == 0 || ROI.height == 0)
+		return detectLikely(image);
+
+	Mat roiImg = image(ROI);
+
+	Rect relative = detectLikely(roiImg);
+	return Rect(relative.x + ROI.x, relative.y + ROI.y, relative.width, relative.height);
 }
 
 Rect ObjectDetector::getLargest(std::vector<Rect> &rectangles)

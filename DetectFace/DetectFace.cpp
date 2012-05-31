@@ -105,7 +105,7 @@ int main(int argc, char** argv)
                 break;
 			
 			fps.addFrame();
-			printf("FPS: %d\n", fps.getFPS());
+			//printf("FPS: %d\n", fps.getFPS());
         }
 
         // Release the images, and capture memory
@@ -137,17 +137,14 @@ void drawEyeLine(CvSeq* eyes, IplImage* img)
 // Function to detect and draw any faces that is present in an image
 void detect_and_draw(IplImage *img)
 {
-	//Rect lastFaceRectangle;
+	static Rect lastFaceRectangle(0, 0, 0, 0);
 	Rect faceRectangle;
 
-	/*
-	if(lastFaceRectangle)
-		faceRectangle = faceDetector.detectLikely(Mat(img), *lastFaceRectangle);
-	else
-		faceRectangle = faceDetector.detectLikely(Mat(img));
-	*/
+	Rect tmp = faceDetector.detectLikely(Mat(img), lastFaceRectangle);
+	if(!tmp.area())
+		tmp = faceDetector.detectLikely(Mat(img));
 
-	faceContainer.getFaceArea()->setRect(faceDetector.detectLikely(Mat(img)));
+	faceContainer.getFaceArea()->setRect(tmp);
 	faceRectangle = faceContainer.getFaceArea()->getRect();
 
 	if(faceContainer.getFaceArea()->isValid())
@@ -157,10 +154,11 @@ void detect_and_draw(IplImage *img)
 		float top = 0.25f, bottom = 0.55f, left = 0.1f, right = 0.9f;
 		float noseLeft = 0.3f, noseRight = 0.7f, noseTop = 0.5f, noseBottom = 0.8f;
 
-		Rect leftEyeROI(Point(faceRectangle.x + faceRectangle.width * left, faceRectangle.y + faceRectangle.height * top), Point(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
-		Rect rightEyeROI(Point(faceRectangle.x + faceRectangle.width * 0.5f, faceRectangle.y + faceRectangle.height * top), Point(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
-		Rect noseROI(Point(faceRectangle.x + faceRectangle.width * noseLeft, faceRectangle.y + faceRectangle.height * noseTop), Point(faceRectangle.width * (noseRight - noseLeft), faceRectangle.height * (noseBottom - noseTop)));
-		
+		// Absolute
+		Rect leftEyeROI(Point(faceRectangle.x + faceRectangle.width * left, faceRectangle.y + faceRectangle.height * top), Size(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
+		Rect rightEyeROI(Point(faceRectangle.x + faceRectangle.width * 0.5f, faceRectangle.y + faceRectangle.height * top), Size(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
+		Rect noseROI(Point(faceRectangle.x + faceRectangle.width * noseLeft, faceRectangle.y + faceRectangle.height * noseTop), Size(faceRectangle.width * (noseRight - noseLeft), faceRectangle.height * (noseBottom - noseTop)));
+
 		faceContainer.getNoseArea()->setRect(noseDetector.detectLikely(Mat(img), noseROI));
 		faceContainer.getNoseArea()->draw(img, CV_RGB(0, 0, 255));
 
@@ -170,13 +168,29 @@ void detect_and_draw(IplImage *img)
 		faceContainer.getRightEyeArea()->setRect(rightEyeDetector.detectLikely(Mat(img), rightEyeROI));
 		faceContainer.getRightEyeArea()->draw(img, CV_RGB(255, 0, 0));
 
-		/*
-		faceRectangle->x *= 0.9;
-		faceRectangle->y *= 0.9;
-		faceRectangle->height *= 1.1;
-		faceRectangle->width *= 1.1;
+		faceRectangle.x = MAX(0.0f, faceRectangle.x - 30);
+		faceRectangle.y = MAX(0.0f, faceRectangle.y - 30);
+		faceRectangle.width = MIN(img->width - faceRectangle.x, faceRectangle.width + 60);
+		faceRectangle.height = MIN(img->height - faceRectangle.y, faceRectangle.height + 60);
 		lastFaceRectangle = faceRectangle;
-		*/
+
+		//cvRectangle(img, lastFaceRectangle.tl(), lastFaceRectangle.br(), CV_RGB(255, 0, 255), 3);
+
+		float leftAngle = faceContainer.getLeftAngle();
+		float rightAngle = faceContainer.getRightAngle();
+
+		printf("Left angle: %2f, ", leftAngle);
+		printf("Right angle: %2f\n", rightAngle);
+
+		string side = "center";
+
+		if(leftAngle > 57)
+			side = "left";
+
+		if(rightAngle > 57)
+			side = "right";
+
+		printf("Side: %s\n", side.c_str());
 	}
 
 	// Show the image in the window named "result"
