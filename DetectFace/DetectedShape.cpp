@@ -1,5 +1,8 @@
 #include "StdAfx.h"
+#include <ctime>
 #include "DetectedShape.h"
+
+const double DetectedShape::oldTime = 0.5;
 
 DetectedShape::DetectedShape(Rect rect)
 {
@@ -14,6 +17,7 @@ DetectedShape::DetectedShape()
 	rect.height = 0;
 	center = Vec2f(0, 0);
 	valid = false;
+	timeStamp = -1;
 }
 
 DetectedShape::~DetectedShape()
@@ -34,6 +38,7 @@ void DetectedShape::setRect(const Rect &rect)
 	{
 		this->rect = rect;	
 		center = Vec2f(rect.x + rect.width / 2.0f, rect.y + rect.height / 2.0f);
+		timeStamp = time(NULL);
 	}
 }
 
@@ -50,5 +55,6 @@ void DetectedShape::draw(IplImage *img, CvScalar color)
 
 bool DetectedShape::isValid()
 {
-	return valid;
+	// If you're valid you're valid. If not, then you're valid if less than OLD_TIME has past since you were last valid
+	return (valid || (!valid && (difftime(time(NULL), timeStamp) < DetectedShape::oldTime)));
 }

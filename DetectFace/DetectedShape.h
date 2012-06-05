@@ -12,6 +12,8 @@ private:
 	Rect rect;
 	Vec2f center;
 	bool valid;
+	time_t timeStamp;
+	const static double oldTime;
 
 public:
 	DetectedShape(Rect);

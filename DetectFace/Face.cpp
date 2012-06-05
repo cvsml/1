@@ -5,6 +5,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <memory>
 
 using namespace std;
 using namespace cv;
@@ -25,22 +26,22 @@ Face::~Face()
 
 }
 
-std::shared_ptr<DetectedShape> Face::getFaceArea()
+shared_ptr<DetectedShape> Face::getFaceArea()
 {
 	return faceArea;
 }
 
-std::shared_ptr<DetectedShape> Face::getNoseArea()
+shared_ptr<DetectedShape> Face::getNoseArea()
 {
 	return noseArea;
 }
 
-std::shared_ptr<DetectedShape> Face::getLeftEyeArea()
+shared_ptr<DetectedShape> Face::getLeftEyeArea()
 {
 	return leftEyeArea;
 }
 
-std::shared_ptr<DetectedShape> Face::getRightEyeArea()
+shared_ptr<DetectedShape> Face::getRightEyeArea()
 {
 	return rightEyeArea;
 }
@@ -82,4 +83,30 @@ double Face::getDegree(Vec2f &center1, Vec2f &center2, Vec2f &center3)
 	Vec2f vec2 = center3 - center1;
 
 	return getDegree(vec1, vec2);
+}
+
+/*
+ * Nose is between the left and the right eye, between 0 and 1. If the ratio is 0.3, then that means
+ * that the nose is 30% between the left and the right eye, closer to the left eye.
+ */
+double Face::getRatioOld()
+{
+	double xLeftEye = leftEyeArea->getCenter()[0];
+	double xRightEye = rightEyeArea->getCenter()[0];
+	double xNose = noseArea->getCenter()[0];
+
+	return (xNose - xLeftEye) / (xRightEye - xLeftEye);
+}
+
+double Face::getRatio()
+{
+	Vec2f leftEye = leftEyeArea->getCenter();
+	Vec2f rightEye = rightEyeArea->getCenter();
+	Vec2f nose = noseArea->getCenter();
+	Vec2f n = rightEye - leftEye;
+	normalize(n, n);
+
+	// We projected the vector (Nose - leftEye) onto (rightEye - leftEye)
+	// then divided the norm of that vector by the norm of (rightEye - leftEye)
+	return norm((leftEye - nose).dot(n) * n) / norm(rightEye - leftEye);
 }

@@ -23,6 +23,7 @@
 #include "DetectedShape.h"
 #include "ObjectDetector.h"
 #include "Face.h"
+#include "GestureDetector.h"
 
 using namespace std;
 using namespace cv;
@@ -39,6 +40,7 @@ ObjectDetector rightEyeDetector("haarcascade_mcs_righteye.xml", 1.3f);
 ObjectDetector noseDetector("haarcascade_mcs_nose.xml", 1.3f);
 
 Face faceContainer;
+GestureDetector gesture;
 
 // Main function, defines the entry point for the program.
 int main(int argc, char** argv)
@@ -162,10 +164,11 @@ void detect_and_draw(IplImage *img)
 		faceContainer.getNoseArea()->setRect(noseDetector.detectLikely(Mat(img), noseROI));
 		faceContainer.getNoseArea()->draw(img, CV_RGB(0, 0, 255));
 
-		faceContainer.getLeftEyeArea()->setRect(leftEyeDetector.detectLikely(Mat(img), leftEyeROI));
+		// The image is flipped, so left eye needs to search on the right side, and vice verca
+		faceContainer.getLeftEyeArea()->setRect(leftEyeDetector.detectLikely(Mat(img), rightEyeROI));
 		faceContainer.getLeftEyeArea()->draw(img, CV_RGB(0, 255, 0));
 
-		faceContainer.getRightEyeArea()->setRect(rightEyeDetector.detectLikely(Mat(img), rightEyeROI));
+		faceContainer.getRightEyeArea()->setRect(rightEyeDetector.detectLikely(Mat(img), leftEyeROI));
 		faceContainer.getRightEyeArea()->draw(img, CV_RGB(255, 0, 0));
 
 		faceRectangle.x = MAX(0.0f, faceRectangle.x - 30);
@@ -176,21 +179,32 @@ void detect_and_draw(IplImage *img)
 
 		//cvRectangle(img, lastFaceRectangle.tl(), lastFaceRectangle.br(), CV_RGB(255, 0, 255), 3);
 
-		float leftAngle = faceContainer.getLeftAngle();
-		float rightAngle = faceContainer.getRightAngle();
+//		if(faceContainer.getLeftEyeArea()->isValid() && faceContainer.getRightEyeArea()->isValid() && faceContainer.getNoseArea()->isValid())
+//		{
+			double ratio = faceContainer.getRatio();
+			printf("New Ratio: %.2f, Old Ratio: %.2f\n", ratio, faceContainer.getRatioOld());
+			//gesture.printMode(gesture.updateMode(ratio));
 
-		printf("Left angle: %2f, ", leftAngle);
-		printf("Right angle: %2f\n", rightAngle);
+			/*float leftAngle = faceContainer.getLeftAngle();
+			float rightAngle = faceContainer.getRightAngle();
 
-		string side = "center";
+			printf("Left angle: %2f, ", leftAngle);
+			printf("Right angle: %2f\n", rightAngle);
 
-		if(leftAngle > 57)
-			side = "left";
+			string side = "center";
 
-		if(rightAngle > 57)
-			side = "right";
+			if(leftAngle > 57)
+				side = "left";
 
-		printf("Side: %s\n", side.c_str());
+			if(rightAngle > 57)
+				side = "right";
+
+			printf("Side: %s\n", side.c_str()); */
+//		}
+//		else
+//		{
+//			cout << "Invalid" << endl;
+//		}
 	}
 
 	// Show the image in the window named "result"

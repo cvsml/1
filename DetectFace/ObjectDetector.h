@@ -12,6 +12,8 @@ private:
 	CvSize minSize;
 	CvSize maxSize;
 
+	Rect getLargest(std::vector<Rect>&);
+
 public:
 	ObjectDetector(string xmlPath, double scaleFactor = 1.1, int numNeigbors = 3, int flags = CV_HAAR_SCALE_IMAGE, Size minSize = Size(30,30), Size maxSize = Size());
 	~ObjectDetector();
@@ -21,8 +23,6 @@ public:
 
 	Rect detectLikely(Mat&);
 	Rect detectLikely(Mat&, Rect&);
-
-	static Rect getLargest(std::vector<Rect>&);
 
 	bool isValid();
 };

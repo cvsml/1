@@ -25,7 +25,7 @@ ObjectDetector::~ObjectDetector()
 
 std::vector<Rect> ObjectDetector::detect(Mat& image)
 {
-	std::vector<Rect> found;
+	vector<Rect> found;
 
 	if(!valid)
 		return found;
@@ -37,7 +37,15 @@ std::vector<Rect> ObjectDetector::detect(Mat& image)
 std::vector<Rect> ObjectDetector::detect(Mat &image, Rect &ROI)
 {
 	Mat roiImg = Mat(image, ROI);
-	return detect(roiImg);
+	std::vector<Rect> result = detect(roiImg);
+
+	// Covnert the result vector from relative to absolute coordinates
+	for(int i = 0; i < result.size(); ++i) { 
+		result[i].x += ROI.x;
+		result[i].y += ROI.y;
+	}
+
+	return result;
 }
 
 Rect ObjectDetector::detectLikely(Mat &image)
