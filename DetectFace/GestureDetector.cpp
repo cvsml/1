@@ -9,7 +9,8 @@ const double GestureDetector::RIGHT_CHECKPOINT = 0.65;
 
 GestureDetector::GestureDetector()
 {
-	mode = MODE_CENTER;
+	direction = DIRECTION_CENTER;
+	gesture = GESTURE_CENTER;
 }
 
 
@@ -18,44 +19,70 @@ GestureDetector::~GestureDetector()
 
 }
 
-MODES GestureDetector::getMode()
+GESTURE GestureDetector::getGesture()
 {
-	return mode;
+	return gesture;
 }
 
 /*
  * Left		| Buffer	  | Center		| Buffer	  | Right
  * 0 - 0.35 | 0.35 - 0.45 | 0.45 - 0.55 | 0.55 - 0.65 | 0.65 - 1.0
  */
-MODES GestureDetector::updateMode (double ratio)
+GESTURE GestureDetector::updateGesture (double ratio, bool leftEyeValidity, bool rightEyeValidity)
 {
-	if (ratio > RIGHT_CHECKPOINT)
-		mode = MODE_RIGHT;
-	else if (ratio  < LEFT_CHECKPOINT)
-		mode = MODE_LEFT;
-	else {
-		if (ratio < CENTER_RIGHT && mode == MODE_RIGHT)
-			mode = MODE_CENTER;
-		else if(ratio > CENTER_LEFT && mode == MODE_LEFT)
-			mode = MODE_CENTER;
+	if(leftEyeValidity && rightEyeValidity)
+	{
+		if (ratio > RIGHT_CHECKPOINT)
+			direction = DIRECTION_RIGHT;
+		else if (ratio  < LEFT_CHECKPOINT)
+			direction = DIRECTION_LEFT;
+		else 
+		{
+			if (ratio < CENTER_RIGHT && direction == DIRECTION_RIGHT)
+				direction = DIRECTION_CENTER;
+			else if(ratio > CENTER_LEFT && direction == DIRECTION_LEFT)
+				direction = DIRECTION_CENTER;
+		}
 	}
 
-	return mode;
+	if(direction == DIRECTION_CENTER)
+	{
+		if(!leftEyeValidity)
+			gesture = GESTURE_LEFT_EYE;
+		else if(!rightEyeValidity)
+			gesture = GESTURE_RIGHT_EYE;
+		else
+			gesture = GESTURE_CENTER;
+	}
+	else
+	{
+		gesture = directionToGesture(direction);
+	}
+
+	return gesture;
 }
 
-void GestureDetector::printMode(MODES mode)
+void GestureDetector::print(GESTURE gesture)
 {
-	switch(mode) {
-		case MODE_LEFT:
+	switch(gesture) {
+		case GESTURE_LEFT:
 			printf("Looking left\n");
 		break;
 
-		case MODE_CENTER:
-			printf("Looing center\n");
+		case GESTURE_CENTER:
+			printf("Looking center\n");
 		break;
 
-		case MODE_RIGHT:
+		case GESTURE_RIGHT:
 			printf("Looking right\n");
+		break;
+
+		case GESTURE_LEFT_EYE:
+			printf("Shut left eye\n");
+		break;
+
+		case GESTURE_RIGHT_EYE:
+			printf("Shut right eye\n");
 		break;
 
 		default:
@@ -64,7 +91,29 @@ void GestureDetector::printMode(MODES mode)
 	}
 }
 
-void GestureDetector::printMode()
+void GestureDetector::print()
 {
-	printMode(mode);
+	print(gesture);
+}
+
+GESTURE GestureDetector::directionToGesture(DIRECTION direction)
+{
+	switch(direction) {
+		case DIRECTION_LEFT:
+			return GESTURE_LEFT;
+		break;
+
+		case DIRECTION_CENTER:
+			return GESTURE_CENTER;
+		break;
+
+		case DIRECTION_RIGHT:
+			return GESTURE_RIGHT;
+		break;
+
+		default:
+			printf("Error in GestureDetector::directionToGesture. Invalid direction.\n");
+			return GESTURE_CENTER;
+		break;
+	}
 }

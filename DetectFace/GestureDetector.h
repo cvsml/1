@@ -1,10 +1,18 @@
 #ifndef GESTURE_DETECTOR_H
 #define GESTURE_DETECTOR_H
 
-enum MODES {
-	MODE_LEFT = 0,
-	MODE_CENTER = 1,
-	MODE_RIGHT = 2
+enum DIRECTION {
+	DIRECTION_LEFT = 0,
+	DIRECTION_CENTER = 1,
+	DIRECTION_RIGHT = 2
+};
+
+enum GESTURE {
+	GESTURE_LEFT = 0,
+	GESTURE_CENTER = 1,
+	GESTURE_RIGHT = 2,
+	GESTURE_LEFT_EYE = 3,
+	GESTURE_RIGHT_EYE = 4
 };
 
 class GestureDetector {
@@ -13,16 +21,20 @@ class GestureDetector {
 	const static double CENTER_CHECKPOINT;
 	const static double CENTER_RIGHT;
 	const static double RIGHT_CHECKPOINT;
-	MODES mode;
+
+	DIRECTION direction;
+	GESTURE gesture;
+
+	GESTURE directionToGesture(DIRECTION direction);
 
 public:
 	GestureDetector();
 	~GestureDetector();
 
-	MODES updateMode (double ratio);
-	MODES getMode();
-	void printMode(MODES mode);
-	void printMode();
+	GESTURE updateGesture (double ratio, bool leftEyeValidity, bool rightEyeValdity);
+	GESTURE getGesture();
+	void print(GESTURE gesture);
+	void print();
 };
 
 #endif

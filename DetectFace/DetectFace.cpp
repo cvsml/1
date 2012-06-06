@@ -182,8 +182,10 @@ void detect_and_draw(IplImage *img)
 //		if(faceContainer.getLeftEyeArea()->isValid() && faceContainer.getRightEyeArea()->isValid() && faceContainer.getNoseArea()->isValid())
 //		{
 			double ratio = faceContainer.getRatio();
-			printf("New Ratio: %.2f, Old Ratio: %.2f\n", ratio, faceContainer.getRatioOld());
-			//gesture.printMode(gesture.updateMode(ratio));
+			//printf("New Ratio: %.2f, Old Ratio: %.2f\n", ratio, faceContainer.getRatioOld());
+
+			gesture.updateGesture(ratio, faceContainer.getLeftEyeArea()->isValid(), faceContainer.getRightEyeArea()->isValid());
+			gesture.print();
 
 			/*float leftAngle = faceContainer.getLeftAngle();
 			float rightAngle = faceContainer.getRightAngle();
