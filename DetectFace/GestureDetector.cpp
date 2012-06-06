@@ -28,8 +28,11 @@ GESTURE GestureDetector::getGesture()
  * Left		| Buffer	  | Center		| Buffer	  | Right
  * 0 - 0.35 | 0.35 - 0.45 | 0.45 - 0.55 | 0.55 - 0.65 | 0.65 - 1.0
  */
-GESTURE GestureDetector::updateGesture (double ratio, bool leftEyeValidity, bool rightEyeValidity)
+GESTURE GestureDetector::updateGesture (double ratio, bool leftEyeValidity, bool rightEyeValidity, bool noseValidity)
 {
+	if(!noseValidity)
+		return gesture;
+
 	if(leftEyeValidity && rightEyeValidity)
 	{
 		if (ratio > RIGHT_CHECKPOINT)

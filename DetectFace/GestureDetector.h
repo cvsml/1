@@ -31,7 +31,7 @@ public:
 	GestureDetector();
 	~GestureDetector();
 
-	GESTURE updateGesture (double ratio, bool leftEyeValidity, bool rightEyeValdity);
+	GESTURE updateGesture (double ratio, bool leftEyeValidity, bool rightEyeValdity, bool noseValidity);
 	GESTURE getGesture();
 	void print(GESTURE gesture);
 	void print();

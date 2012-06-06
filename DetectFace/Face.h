@@ -26,6 +26,9 @@ public:
 	double getRightAngle();
 	double getRatio();
 	double getRatioOld();
+	bool isLeftEyeValid();
+	bool isRightEyeValid();
+	bool isNoseValid();
 };
 
 #endif

@@ -110,3 +110,18 @@ double Face::getRatio()
 	// then divided the norm of that vector by the norm of (rightEye - leftEye)
 	return norm((leftEye - nose).dot(n) * n) / norm(rightEye - leftEye);
 }
+
+bool Face::isLeftEyeValid()
+{
+	return leftEyeArea->isValid();
+}
+
+bool Face::isRightEyeValid()
+{
+	return rightEyeArea->isValid();
+}
+
+bool Face::isNoseValid()
+{
+	return noseArea->isValid();
+}
