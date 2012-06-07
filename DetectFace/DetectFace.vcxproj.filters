@@ -48,10 +48,10 @@
     <ClInclude Include="GestureSequence.h">
       <Filter>Source Files\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="Gestures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Game.h">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Gesture.h">
       <Filter>Source Files\Game Logic</Filter>
     </ClInclude>
   </ItemGroup>
@@ -87,6 +87,9 @@
       <Filter>Source Files\Game Logic</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Gesture.cpp">
       <Filter>Source Files\Game Logic</Filter>
     </ClCompile>
   </ItemGroup>

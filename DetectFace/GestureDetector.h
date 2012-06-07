@@ -1,7 +1,7 @@
 #ifndef GESTURE_DETECTOR_H
 #define GESTURE_DETECTOR_H
 
-#include "Gestures.h"
+#include "Gesture.h"
 
 class GestureDetector {
 	const static double LEFT_CHECKPOINT;

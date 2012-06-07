@@ -13,27 +13,27 @@ GestureGenerator::~GestureGenerator()
 
 }
 
-GESTURE GestureGenerator::nextGesture()
+Gesture GestureGenerator::nextGesture()
 {
 	int gesture = rand() % 4; // Random number from 0 to 3
-	GESTURE result = GESTURE_CENTER;
+	Gesture result = Gesture::Gestures[GESTURE_CENTER];
 
 	switch(gesture)
 	{
 		case 0:
-			result = GESTURE_LEFT;
+			result = Gesture::Gestures[GESTURE_LEFT];
 		break;
 
 		case 1:
-			result = GESTURE_RIGHT;
+			result = Gesture::Gestures[GESTURE_RIGHT];
 		break;
 
 		case 2:
-			result = GESTURE_LEFT_EYE;
+			result = Gesture::Gestures[GESTURE_LEFT_EYE];
 		break;
 
 		case 3:
-			result = GESTURE_RIGHT_EYE;
+			result = Gesture::Gestures[GESTURE_RIGHT_EYE];
 		break;
 
 		default:

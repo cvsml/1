@@ -49,7 +49,7 @@ Vec2f DetectedShape::getCenter()
 
 void DetectedShape::draw(IplImage *img, CvScalar color)
 {
-	//if(valid)
+	if(isValid())
 		cvRectangle(img, rect.tl(), rect.br(), color, 3);
 }
 

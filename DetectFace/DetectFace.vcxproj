@@ -85,9 +85,9 @@
     <ClInclude Include="DetectedShape.h" />
     <ClInclude Include="Face.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Gesture.h" />
     <ClInclude Include="GestureDetector.h" />
     <ClInclude Include="GestureGenerator.h" />
-    <ClInclude Include="Gestures.h" />
     <ClInclude Include="GestureSequence.h" />
     <ClInclude Include="ObjectDetector.h" />
     <ClInclude Include="FPSCalculator.h" />
@@ -101,6 +101,7 @@
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="FPSCalculator.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Gesture.cpp" />
     <ClCompile Include="GestureDetector.cpp" />
     <ClCompile Include="GestureGenerator.cpp" />
     <ClCompile Include="GestureSequence.cpp" />

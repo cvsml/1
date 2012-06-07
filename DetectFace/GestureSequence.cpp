@@ -13,23 +13,23 @@ GestureSequence::~GestureSequence()
 
 }
 
-void GestureSequence::push(GESTURE gesture)
+void GestureSequence::push(Gesture gesture)
 {
 	gestureSequence.push_back(gesture);
 }
 
-GESTURE GestureSequence::peek(GESTURE gesture)
+Gesture GestureSequence::peek(Gesture gesture)
 {
 	if(gestureSequence.empty())
 	{
 		printf("%s\n", "Error in GestureSequence::peek, attempted to peek in empty sequence"); 
-		return GESTURE_CENTER;
+		return Gesture::Gestures[GESTURE_CENTER];
 	}
 
 	return gestureSequence.back();
 }
 
-bool GestureSequence::operator = (const GestureSequence &other)
+bool GestureSequence::operator == (const GestureSequence &other)
 {
 	if(gestureSequence.size() != other.gestureSequence.size())
 		return false;

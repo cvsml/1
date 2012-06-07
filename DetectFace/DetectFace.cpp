@@ -36,8 +36,8 @@ void drawFaces(CvSeq *faces, IplImage *img, CvScalar color);
 FPSCalculator fps;
 
 ObjectDetector faceDetector("haarcascade_frontalface_alt2.xml", 1.4f);
-ObjectDetector leftEyeDetector("haarcascade_mcs_lefteye.xml", 1.1f);
-ObjectDetector rightEyeDetector("haarcascade_mcs_righteye.xml", 1.1f);
+ObjectDetector leftEyeDetector("haarcascade_mcs_lefteye.xml", 1.01f, 2);
+ObjectDetector rightEyeDetector("haarcascade_mcs_righteye.xml", 1.01f, 2);
 ObjectDetector noseDetector("haarcascade_mcs_nose.xml", 1.1f, 3, CV_HAAR_SCALE_IMAGE, Size(30, 30));
 
 Face faceContainer;
@@ -87,7 +87,8 @@ int main(int argc, char** argv)
             //if(!frame_copy) {
                 //frame_copy = cvCreateImage( cvSize(frame->width,frame->height), IPL_DEPTH_8U, frame->nChannels );
 				//frame_copy = cvCreateImage(cvSize(frame->width * scale, frame->height * scale), IPL_DEPTH_8U, frame->nChannels);
-				//frame_copy_bw = cvCreateImage(cvSize(frame->width * scale, frame->height * scale), IPL_DEPTH_8U, 1);
+				frame_copy_bw = cvCreateImage(cvSize(frame->width * scale, frame->height * scale), IPL_DEPTH_8U, 1);
+				frame->
 				//cvCvtColor(frame, frame_copy, CV_BGR2GRAY);
 			//}
 			
@@ -161,11 +162,12 @@ void detect_and_draw(IplImage *img)
 		float noseLeft = 0.2f, noseRight = 0.8f, noseTop = 0.4f, noseBottom = 0.9f;
 
 		// Absolute
-		Rect leftEyeROI(Point(faceRectangle.x + faceRectangle.width * left, faceRectangle.y + faceRectangle.height * top), Size(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
-		Rect rightEyeROI(Point(faceRectangle.x + faceRectangle.width * 0.5f, faceRectangle.y + faceRectangle.height * top), Size(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
+		Rect leftEyeROI(Point(faceRectangle.x + faceRectangle.width * left + faceRectangle.width * 0.1, faceRectangle.y + faceRectangle.height * top), Size(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
+		Rect rightEyeROI(Point(faceRectangle.x + faceRectangle.width * 0.5f - faceRectangle.width * 0.1, faceRectangle.y + faceRectangle.height * top), Size(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
 		Rect noseROI(Point(faceRectangle.x + faceRectangle.width * noseLeft, faceRectangle.y + faceRectangle.height * noseTop), Size(faceRectangle.width * (noseRight - noseLeft), faceRectangle.height * (noseBottom - noseTop)));
 
 		//cvRectangle(img, rightEyeROI.tl(), rightEyeROI.br(), CV_RGB(255, 255, 255,), 3);
+		//cvRectangle(img, leftEyeROI.tl(), leftEyeROI.br(), CV_RGB(255, 255, 255,), 3);
 		//cvRectangle(img, noseROI.tl(), noseROI.br(), CV_RGB(255, 255, 255), 3);
 		faceContainer.getNoseArea()->setRect(noseDetector.detectLikely(Mat(img), noseROI));
 		faceContainer.getNoseArea()->draw(img, CV_RGB(0, 0, 255));
@@ -215,8 +217,13 @@ void detect_and_draw(IplImage *img)
 //		{
 //			cout << "Invalid" << endl;
 //		}
+
+			cvRectangle(img, rightEyeROI.tl(), rightEyeROI.br(), CV_RGB(255, 255, 255,), 3);
+		cvRectangle(img, leftEyeROI.tl(), leftEyeROI.br(), CV_RGB(255, 255, 255,), 3);
+		cvRectangle(img, noseROI.tl(), noseROI.br(), CV_RGB(255, 255, 255), 3);
 	}
 
 	// Show the image in the window named "result"
+
 	cvShowImage("Simon", img);
 }

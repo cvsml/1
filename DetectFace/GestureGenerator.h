@@ -1,14 +1,14 @@
 #ifndef GESTURE_GENERATOR_H
 #define GESTURE_GENERATOR_H
 
-#include "Gestures.h"
+#include "Gesture.h"
 
 class GestureGenerator {
 public:
 	GestureGenerator();
 	~GestureGenerator();
 
-	GESTURE nextGesture();
+	Gesture nextGesture();
 };
 
 #endif

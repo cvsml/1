@@ -2,22 +2,22 @@
 #define GESTURE_SEQUENCE
 
 #include <vector>
-#include "Gestures.h"
+#include "Gesture.h"
 
 using namespace std;
 
 class GestureSequence {
 private:
-	vector<GESTURE> gestureSequence;
+	vector<Gesture> gestureSequence;
 	const static unsigned int sequenceLength;
 
 public:
 	GestureSequence();
 	~GestureSequence();
 
-	GESTURE peek(GESTURE gesture);
-	void push(GESTURE gesture);
-	bool operator = (const GestureSequence &other);
+	Gesture peek(Gesture gesture);
+	void push(Gesture gesture);
+	bool operator == (const GestureSequence &other);
 };
 
 #endif
