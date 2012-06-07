@@ -6,6 +6,7 @@
 // Include header files
 #include "cv.h"
 #include "highgui.h"
+#include <opencv2/gpu/gpu.hpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,10 +35,10 @@ void drawFaces(CvSeq *faces, IplImage *img, CvScalar color);
 
 FPSCalculator fps;
 
-ObjectDetector faceDetector("haarcascade_frontalface_alt2.xml", 1.3f);
-ObjectDetector leftEyeDetector("haarcascade_mcs_lefteye.xml", 1.3f);
-ObjectDetector rightEyeDetector("haarcascade_mcs_righteye.xml", 1.3f);
-ObjectDetector noseDetector("haarcascade_mcs_nose.xml", 1.3f);
+ObjectDetector faceDetector("haarcascade_frontalface_alt2.xml", 1.4f);
+ObjectDetector leftEyeDetector("haarcascade_mcs_lefteye.xml", 1.1f);
+ObjectDetector rightEyeDetector("haarcascade_mcs_righteye.xml", 1.1f);
+ObjectDetector noseDetector("haarcascade_mcs_nose.xml", 1.1f, 3, CV_HAAR_SCALE_IMAGE, Size(30, 30));
 
 Face faceContainer;
 GestureDetector gesture;
@@ -82,13 +83,13 @@ int main(int argc, char** argv)
                 break;
             
             // Allocate framecopy as the same size of the frame
-			float scale = 1.0f;
-            if(!frame_copy) {
+			float scale = 640.0f / (float)frame->width;
+            //if(!frame_copy) {
                 //frame_copy = cvCreateImage( cvSize(frame->width,frame->height), IPL_DEPTH_8U, frame->nChannels );
-				frame_copy = cvCreateImage(cvSize(frame->width*scale, frame->height*scale), IPL_DEPTH_8U, frame->nChannels);
-				frame_copy_bw = cvCreateImage(cvSize(frame->width*scale, frame->height*scale), IPL_DEPTH_8U, 1);
+				//frame_copy = cvCreateImage(cvSize(frame->width * scale, frame->height * scale), IPL_DEPTH_8U, frame->nChannels);
+				//frame_copy_bw = cvCreateImage(cvSize(frame->width * scale, frame->height * scale), IPL_DEPTH_8U, 1);
 				//cvCvtColor(frame, frame_copy, CV_BGR2GRAY);
-			}
+			//}
 			
             // Check the origin of image. If top left, copy the image frame to frame_copy. 
             //if( frame->origin == IPL_ORIGIN_TL )
@@ -98,9 +99,12 @@ int main(int argc, char** argv)
             //    cvFlip( frame, frame_copy, 0 );
 
 			//cvCvtColor(frame, frame_copy, CV_BGR2GRAY);
-			cvResize(frame, frame_copy, scale);
-			//cvCvtColor(frame_copy, frame_copy_bw, CV_BGR2GRAY);
-			detect_and_draw(frame_copy);
+			//cvResize(frame, frame_copy, scale);
+			//cvCvtColor(frame, frame_copy_bw, CV_BGR2GRAY);
+
+			//cvEqualizeHist(frame_copy, frame_copy);
+
+			detect_and_draw(frame);
 
             // Wait for a while before proceeding to the next frame
             if(cvWaitKey(1) >= 0 )
@@ -153,14 +157,16 @@ void detect_and_draw(IplImage *img)
 	{
 		faceContainer.getFaceArea()->draw(img, CV_RGB(255, 255, 255));	
 		
-		float top = 0.25f, bottom = 0.55f, left = 0.1f, right = 0.9f;
-		float noseLeft = 0.3f, noseRight = 0.7f, noseTop = 0.5f, noseBottom = 0.8f;
+		float top = 0.20f, bottom = 0.55f, left = 0.0f, right = 1.0f;
+		float noseLeft = 0.2f, noseRight = 0.8f, noseTop = 0.4f, noseBottom = 0.9f;
 
 		// Absolute
 		Rect leftEyeROI(Point(faceRectangle.x + faceRectangle.width * left, faceRectangle.y + faceRectangle.height * top), Size(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
 		Rect rightEyeROI(Point(faceRectangle.x + faceRectangle.width * 0.5f, faceRectangle.y + faceRectangle.height * top), Size(faceRectangle.width * (right - left) / 2.0f, faceRectangle.height * (bottom - top)));
 		Rect noseROI(Point(faceRectangle.x + faceRectangle.width * noseLeft, faceRectangle.y + faceRectangle.height * noseTop), Size(faceRectangle.width * (noseRight - noseLeft), faceRectangle.height * (noseBottom - noseTop)));
 
+		//cvRectangle(img, rightEyeROI.tl(), rightEyeROI.br(), CV_RGB(255, 255, 255,), 3);
+		//cvRectangle(img, noseROI.tl(), noseROI.br(), CV_RGB(255, 255, 255), 3);
 		faceContainer.getNoseArea()->setRect(noseDetector.detectLikely(Mat(img), noseROI));
 		faceContainer.getNoseArea()->draw(img, CV_RGB(0, 0, 255));
 
@@ -185,7 +191,9 @@ void detect_and_draw(IplImage *img)
 			//printf("New Ratio: %.2f, Old Ratio: %.2f\n", ratio, faceContainer.getRatioOld());
 
 			gesture.updateGesture(ratio, faceContainer.isLeftEyeValid(), faceContainer.isRightEyeValid(), faceContainer.isNoseValid());
-			gesture.print();
+
+			if(gesture.newGesture())
+				gesture.print();
 
 			/*float leftAngle = faceContainer.getLeftAngle();
 			float rightAngle = faceContainer.getRightAngle();

@@ -28,24 +28,35 @@ GESTURE GestureDetector::getGesture()
  * Left		| Buffer	  | Center		| Buffer	  | Right
  * 0 - 0.35 | 0.35 - 0.45 | 0.45 - 0.55 | 0.55 - 0.65 | 0.65 - 1.0
  */
+DIRECTION GestureDetector::getDirection(double ratio)
+{
+	DIRECTION result = direction;
+
+	if (ratio > RIGHT_CHECKPOINT)
+		result = DIRECTION_RIGHT;
+	else if (ratio  < LEFT_CHECKPOINT)
+		result = DIRECTION_LEFT;
+	else 
+	{
+		if (ratio < CENTER_RIGHT && direction == DIRECTION_RIGHT)
+			result = DIRECTION_CENTER;
+		else if(ratio > CENTER_LEFT && direction == DIRECTION_LEFT)
+			result = DIRECTION_CENTER;
+	}
+
+	return result;
+}
+
 GESTURE GestureDetector::updateGesture (double ratio, bool leftEyeValidity, bool rightEyeValidity, bool noseValidity)
 {
 	if(!noseValidity)
 		return gesture;
 
+	GESTURE previousGesture = gesture;
+
 	if(leftEyeValidity && rightEyeValidity)
 	{
-		if (ratio > RIGHT_CHECKPOINT)
-			direction = DIRECTION_RIGHT;
-		else if (ratio  < LEFT_CHECKPOINT)
-			direction = DIRECTION_LEFT;
-		else 
-		{
-			if (ratio < CENTER_RIGHT && direction == DIRECTION_RIGHT)
-				direction = DIRECTION_CENTER;
-			else if(ratio > CENTER_LEFT && direction == DIRECTION_LEFT)
-				direction = DIRECTION_CENTER;
-		}
+		direction = getDirection(ratio);
 	}
 
 	if(direction == DIRECTION_CENTER)
@@ -61,6 +72,8 @@ GESTURE GestureDetector::updateGesture (double ratio, bool leftEyeValidity, bool
 	{
 		gesture = directionToGesture(direction);
 	}
+
+	changedGesture = gesture != previousGesture;
 
 	return gesture;
 }
@@ -119,4 +132,9 @@ GESTURE GestureDetector::directionToGesture(DIRECTION direction)
 			return GESTURE_CENTER;
 		break;
 	}
+}
+
+bool GestureDetector::newGesture()
+{
+	return changedGesture;
 }

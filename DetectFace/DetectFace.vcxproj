@@ -58,7 +58,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_core231d.lib;opencv_haartraining_engined.lib;opencv_highgui231d.lib;opencv_legacy231d.lib;opencv_ml231d.lib;opencv_objdetect231d.lib;opencv_features2d231d.lib;opencv_imgproc231d.lib;opencv_video231d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core231d.lib;opencv_haartraining_engined.lib;opencv_highgui231d.lib;opencv_legacy231d.lib;opencv_ml231d.lib;opencv_objdetect231d.lib;opencv_features2d231d.lib;opencv_imgproc231d.lib;opencv_video231d.lib;opencv_gpu231d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -75,7 +75,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opencv_core231.lib;opencv_haartraining_engine.lib;opencv_highgui231.lib;opencv_legacy231.lib;opencv_ml231.lib;opencv_objdetect231.lib;opencv_features2d231.lib;opencv_imgproc231.lib;opencv_video231.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core231.lib;opencv_haartraining_engine.lib;opencv_highgui231.lib;opencv_legacy231.lib;opencv_ml231.lib;opencv_objdetect231.lib;opencv_features2d231.lib;opencv_imgproc231.lib;opencv_video231.lib;opencv_gpu231.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -84,7 +84,11 @@
   <ItemGroup>
     <ClInclude Include="DetectedShape.h" />
     <ClInclude Include="Face.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GestureDetector.h" />
+    <ClInclude Include="GestureGenerator.h" />
+    <ClInclude Include="Gestures.h" />
+    <ClInclude Include="GestureSequence.h" />
     <ClInclude Include="ObjectDetector.h" />
     <ClInclude Include="FPSCalculator.h" />
     <ClInclude Include="stdafx.h" />
@@ -96,7 +100,10 @@
     <ClCompile Include="DetectFace.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="FPSCalculator.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GestureDetector.cpp" />
+    <ClCompile Include="GestureGenerator.cpp" />
+    <ClCompile Include="GestureSequence.cpp" />
     <ClCompile Include="ObjectDetector.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

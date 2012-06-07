@@ -1,19 +1,7 @@
 #ifndef GESTURE_DETECTOR_H
 #define GESTURE_DETECTOR_H
 
-enum DIRECTION {
-	DIRECTION_LEFT = 0,
-	DIRECTION_CENTER = 1,
-	DIRECTION_RIGHT = 2
-};
-
-enum GESTURE {
-	GESTURE_LEFT = 0,
-	GESTURE_CENTER = 1,
-	GESTURE_RIGHT = 2,
-	GESTURE_LEFT_EYE = 3,
-	GESTURE_RIGHT_EYE = 4
-};
+#include "Gestures.h"
 
 class GestureDetector {
 	const static double LEFT_CHECKPOINT;
@@ -24,8 +12,10 @@ class GestureDetector {
 
 	DIRECTION direction;
 	GESTURE gesture;
+	bool changedGesture;
 
 	GESTURE directionToGesture(DIRECTION direction);
+	DIRECTION getDirection(double ratio);
 
 public:
 	GestureDetector();
@@ -35,6 +25,7 @@ public:
 	GESTURE getGesture();
 	void print(GESTURE gesture);
 	void print();
+	bool newGesture();
 };
 
 #endif

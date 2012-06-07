@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Game Logic">
+      <UniqueIdentifier>{3d917a8e-d05f-4e60-864d-ba5ebee24c81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -39,6 +42,18 @@
     <ClInclude Include="GestureDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GestureGenerator.h">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="GestureSequence.h">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Gestures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -64,6 +79,15 @@
     </ClCompile>
     <ClCompile Include="GestureDetector.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GestureGenerator.cpp">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="GestureSequence.cpp">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files\Game Logic</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
