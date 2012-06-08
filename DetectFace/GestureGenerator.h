@@ -8,7 +8,7 @@ public:
 	GestureGenerator();
 	~GestureGenerator();
 
-	Gesture nextGesture();
+	GESTURE nextGesture();
 };
 
 #endif

@@ -23,8 +23,6 @@ public:
 
 	GESTURE updateGesture (double ratio, bool leftEyeValidity, bool rightEyeValdity, bool noseValidity);
 	GESTURE getGesture();
-	void print(GESTURE gesture);
-	void print();
 	bool newGesture();
 };
 

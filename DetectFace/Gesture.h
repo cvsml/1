@@ -24,6 +24,7 @@ private:
 	string imagePath, name;
 
 public:
+	Gesture();
 	Gesture(GESTURE type, string name, string imagePath);
 	~Gesture();
 

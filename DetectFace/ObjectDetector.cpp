@@ -6,7 +6,7 @@
 using namespace std;
 using namespace cv;
 
-#include "ObjectDetector.h";
+#include "ObjectDetector.h"
 
 ObjectDetector::ObjectDetector(String xmlPath, double scaleFactor, int numNeigbors, int flags, Size minSize, Size maxSize)
 {
@@ -40,7 +40,7 @@ std::vector<Rect> ObjectDetector::detect(Mat &image, Rect &ROI)
 	std::vector<Rect> result = detect(roiImg);
 
 	// Covnert the result vector from relative to absolute coordinates
-	for(int i = 0; i < result.size(); ++i) { 
+	for(unsigned int i = 0; i < result.size(); ++i) { 
 		result[i].x += ROI.x;
 		result[i].y += ROI.y;
 	}
@@ -69,7 +69,7 @@ Rect ObjectDetector::getLargest(std::vector<Rect> &rectangles)
 {
 	Rect max = Rect(0, 0, 0, 0);
 
-	for(int i = 0; i < rectangles.size(); i++)
+	for(unsigned int i = 0; i < rectangles.size(); i++)
 	{
 		if(rectangles[i].size().area() >= max.size().area())
 			max = rectangles[i];

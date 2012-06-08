@@ -3,7 +3,8 @@
 
 FPSCalculator::FPSCalculator()
 {
-	fps = frames = 0;
+	fps = 0;
+	frames = 0.0;
 	lastTime = time(NULL);
 }
 
@@ -23,7 +24,7 @@ void FPSCalculator::addFrame()
 
 	if(past > 1.0)
 	{
-		fps = frames / past;
+		fps = (int)(frames / past);
 		frames = 0;
 		lastTime = currentTime;
 	}

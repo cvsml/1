@@ -1,11 +1,15 @@
 #include "StdAfx.h"
 #include "GestureSequence.h"
+#include <iostream>
 
-const unsigned int GestureSequence::sequenceLength = 20;
+void GestureSequence::reset()
+{
+	gestureSequence.clear();
+}
 
 GestureSequence::GestureSequence()
 {
-
+	reset();
 }
 
 GestureSequence::~GestureSequence()
@@ -13,20 +17,36 @@ GestureSequence::~GestureSequence()
 
 }
 
-void GestureSequence::push(Gesture gesture)
+void GestureSequence::push(GESTURE gesture)
 {
 	gestureSequence.push_back(gesture);
 }
 
-Gesture GestureSequence::peek(Gesture gesture)
+GESTURE GestureSequence::peek()
 {
 	if(gestureSequence.empty())
 	{
 		printf("%s\n", "Error in GestureSequence::peek, attempted to peek in empty sequence"); 
-		return Gesture::Gestures[GESTURE_CENTER];
+		return GESTURE_CENTER;
 	}
 
 	return gestureSequence.back();
+}
+
+GESTURE GestureSequence::operator [](int i)
+{
+	if(i < 0 || i >= (int)gestureSequence.size())
+	{
+		cout << "Error in GestureSequence::operator [], invalid index" << endl;
+		return GESTURE_CENTER;
+	}
+
+	return gestureSequence[i];
+}
+
+int GestureSequence::size()
+{
+	return gestureSequence.size();
 }
 
 bool GestureSequence::operator == (const GestureSequence &other)
@@ -34,11 +54,23 @@ bool GestureSequence::operator == (const GestureSequence &other)
 	if(gestureSequence.size() != other.gestureSequence.size())
 		return false;
 
-	for(int i = 0; i < gestureSequence.size(); ++i)
+	for(unsigned int i = 0; i < (int)gestureSequence.size(); ++i)
 	{
 		if(gestureSequence[i] != other.gestureSequence[i])
 			return false;
 	}
 
 	return true;
+}
+
+void GestureSequence::print()
+{
+	cout << "----------------------------" << endl;
+
+	for(unsigned int i = 0; i < gestureSequence.size(); ++i)
+	{
+		printf("%d ", i);
+		Gesture::Gestures[gestureSequence[i]].print();
+		cout << endl;
+	}
 }

@@ -2,11 +2,17 @@
 #include "Gesture.h"
 #include <iostream>
 
-Gesture Gesture::Gestures[] = {Gesture(GESTURE_LEFT, "Looking Left", "LLeft.bmp"), 
-	Gesture(GESTURE_LEFT, "Looking Center", "Center.bmp"), 
-	Gesture(GESTURE_LEFT, "Looking Right", "LReft.bmp"), 
-	Gesture(GESTURE_LEFT, "Hidding Left", "HLeft.bmp"),
-	Gesture(GESTURE_LEFT, "Hidding Right", "HRight.bmp")};
+Gesture Gesture::Gestures[] = {
+	Gesture(GESTURE_LEFT, "Looking Left", "LLeft.bmp"), 
+	Gesture(GESTURE_CENTER, "Looking Center", "Center.bmp"), 
+	Gesture(GESTURE_RIGHT, "Looking Right", "LReft.bmp"), 
+	Gesture(GESTURE_LEFT_EYE, "Hiding Left", "HLeft.bmp"),
+	Gesture(GESTURE_RIGHT_EYE, "Hiding Right", "HRight.bmp")};
+
+Gesture::Gesture()
+{
+	type = GESTURE_CENTER;
+}
 
 Gesture::Gesture(GESTURE type, string name, string imagePath)
 {
@@ -36,10 +42,10 @@ void  Gesture::draw()
 
 bool Gesture::operator== (const Gesture &other)
 {
-	return !(this->type == other.type);
+	return this->type == other.type;
 }
 
 bool Gesture::operator!= (const Gesture &other)
 {
-	return !(this->type != other.type);
+	return !(*this == other);
 }

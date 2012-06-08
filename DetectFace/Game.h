@@ -6,14 +6,24 @@
 
 class Game {
 private:
+	const static unsigned int victorySequenceLength;
+
 	GestureSequence sequence;
+	unsigned int index;
+
+	GestureGenerator generator;
+
+	GESTURE previousGesture;
+
+	void newTurn();
+	bool checkVictory();
 
 public:
 	Game();
 	~Game();
 
 	void newGame();
-	void newTurn();
+	void handleGesture(GESTURE newGesture);
 };
 
 #endif

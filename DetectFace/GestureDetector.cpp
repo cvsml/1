@@ -78,40 +78,6 @@ GESTURE GestureDetector::updateGesture (double ratio, bool leftEyeValidity, bool
 	return gesture;
 }
 
-void GestureDetector::print(GESTURE gesture)
-{
-	switch(gesture) {
-		case GESTURE_LEFT:
-			printf("Looking left\n");
-		break;
-
-		case GESTURE_CENTER:
-			printf("Looking center\n");
-		break;
-
-		case GESTURE_RIGHT:
-			printf("Looking right\n");
-		break;
-
-		case GESTURE_LEFT_EYE:
-			printf("Shut left eye\n");
-		break;
-
-		case GESTURE_RIGHT_EYE:
-			printf("Shut right eye\n");
-		break;
-
-		default:
-			printf("???\n");
-		break;
-	}
-}
-
-void GestureDetector::print()
-{
-	print(gesture);
-}
-
 GESTURE GestureDetector::directionToGesture(DIRECTION direction)
 {
 	switch(direction) {

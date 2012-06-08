@@ -8,16 +8,19 @@ using namespace std;
 
 class GestureSequence {
 private:
-	vector<Gesture> gestureSequence;
-	const static unsigned int sequenceLength;
+	vector<GESTURE> gestureSequence;
 
 public:
 	GestureSequence();
 	~GestureSequence();
+	void reset();
 
-	Gesture peek(Gesture gesture);
-	void push(Gesture gesture);
+	GESTURE peek();
+	GESTURE operator [](int i);
+	void push(GESTURE gesture);
 	bool operator == (const GestureSequence &other);
+	void print();
+	int size();
 };
 
 #endif
