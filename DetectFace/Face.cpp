@@ -10,7 +10,6 @@
 using namespace std;
 using namespace cv;
 
-#include "DetectedShape.h"
 #include "Face.h"
 
 Face::Face()

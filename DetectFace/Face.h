@@ -3,6 +3,8 @@
 
 using namespace std;
 
+#include "DetectedShape.h"
+
 class Face {
 private:
 	shared_ptr<DetectedShape> faceArea;

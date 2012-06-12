@@ -1,8 +1,17 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "cv.h"
+#include "highgui.h"
+#include <opencv2/gpu/gpu.hpp>
+
 #include "GestureGenerator.h"
 #include "GestureSequence.h"
+#include "FPSCalculator.h"
+#include "Face.h"
+#include "Gesture.h"
+#include "ObjectDetector.h"
+#include "GestureDetector.h"
 
 class Game {
 private:
@@ -15,6 +24,14 @@ private:
 
 	GESTURE previousGesture;
 
+	Face faceContainer;
+	GestureDetector gesture;
+	FPSCalculator fps;
+	ObjectDetector faceDetector;
+	ObjectDetector leftEyeDetector;
+	ObjectDetector rightEyeDetector;
+	ObjectDetector noseDetector;
+
 	void newTurn();
 	bool checkVictory();
 
@@ -24,6 +41,9 @@ public:
 
 	void newGame();
 	void handleGesture(GESTURE newGesture);
+
+	void update(IplImage *img);
+	void draw(IplImage *img);
 };
 
 #endif
