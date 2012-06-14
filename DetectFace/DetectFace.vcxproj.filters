@@ -54,6 +54,9 @@
     <ClInclude Include="Gesture.h">
       <Filter>Source Files\Game Logic</Filter>
     </ClInclude>
+    <ClInclude Include="WxApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -91,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="Gesture.cpp">
       <Filter>Source Files\Game Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="WxApp.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "cv.h"
 #include "highgui.h"
 #include <opencv2/gpu/gpu.hpp>
+#include "wx/wx.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +27,7 @@ using namespace std;
 using namespace cv;
 
 Game game;
-
+/*
 // Main function, defines the entry point for the program.
 int main(int argc, char** argv)
 {
@@ -101,3 +102,4 @@ int main(int argc, char** argv)
     // return 0 to indicate successfull execution of the program
     return 0;
 }
+*/
