@@ -26,7 +26,6 @@
 using namespace std;
 using namespace cv;
 
-Game game;
 /*
 // Main function, defines the entry point for the program.
 int main(int argc, char** argv)

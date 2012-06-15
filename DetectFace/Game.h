@@ -13,6 +13,9 @@
 #include "ObjectDetector.h"
 #include "GestureDetector.h"
 
+#include <string>
+using namespace std;
+
 class Game {
 private:
 	const static unsigned int victorySequenceLength;
@@ -44,6 +47,7 @@ public:
 
 	void update(IplImage *img);
 	void draw(IplImage *img);
+	std::string getFPS();
 };
 
 #endif

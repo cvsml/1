@@ -159,3 +159,10 @@ void Game::draw(IplImage *img)
 	putText(Mat(img), stream.str().c_str(), Point(50, 50), FONT_HERSHEY_SIMPLEX, 0.8, CV_RGB(255, 0, 0), 2);
 	cvShowImage("Simon", img);
 }
+
+std::string Game::getFPS()
+{
+	stringstream stream;
+	stream << fps.getFPS();
+	return stream.str();
+}
