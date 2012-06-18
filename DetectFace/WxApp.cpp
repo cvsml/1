@@ -57,17 +57,16 @@ bool MyApp::OnInit()
     return true;
 } 
 
-BEGIN_EVENT_TABLE(BasicDrawPane, wxPanel)
-EVT_PAINT(BasicDrawPane::paintEvent)
-END_EVENT_TABLE()
- 
-MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50,50), wxSize(640, 480))
+MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50, 50), wxSize(640, 480 + 100))
 {
-    wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
     drawPane = new BasicDrawPane(this);
     sizer->Add(drawPane, 1, wxEXPAND);
+	
     SetSizer(sizer);
         
+	createMenu();
+
     timer = new RenderTimer(drawPane);
     Show();
     timer->start();
@@ -77,12 +76,42 @@ MyFrame::~MyFrame()
 {
     delete timer;
 }
-void MyFrame::onClose(wxCloseEvent& evt)
+
+void MyFrame::createMenu()
 {
-	cvReleaseCapture(&drawPane->capture);
-	cvReleaseImage(&drawPane->frame);
+	menuBar = new wxMenuBar();
+
+    // File Menu
+    fileMenu = new wxMenu();
+    fileMenu->Append(wxID_OPEN, _T("&Open"));
+    fileMenu->Append(wxID_SAVE, _T("&Save"));
+    fileMenu->AppendSeparator();
+    fileMenu->Append(wxID_EXIT, _T("&Quit"));
+    menuBar->Append(fileMenu, _T("&File"));
+    // About menu
+    helpMenu = new wxMenu();
+    helpMenu->Append(wxID_ABOUT, _T("&About"));
+	helpMenu->Append(wxID_HELP, _T("&Instructions"));
+    menuBar->Append(helpMenu, _T("&Help"));
+ 
+    SetMenuBar(menuBar);
+}
+
+void MyFrame::OnClose(wxCloseEvent& evt)
+{
     timer->Stop();
-    evt.Skip();
+	drawPane->Close();
+	evt.Skip();
+}
+
+void MyFrame::menuOnAbout(wxCommandEvent& WXUNUSED(event))
+{
+	wxMessageBox(wxT("Simon 2012 by Assaf Muller, Noam Slomianko and Tomer Levin"), wxT("About"), wxOK | wxICON_INFORMATION);
+}
+
+void MyFrame::menuOnExit(wxCommandEvent& WXUNUSED(event))
+{
+	Close();
 }
 
 BasicDrawPane::BasicDrawPane(wxFrame* parent) : wxPanel(parent)
@@ -102,6 +131,19 @@ BasicDrawPane::BasicDrawPane(wxFrame* parent) : wxPanel(parent)
 BasicDrawPane::~BasicDrawPane()
 {
 
+}
+
+void BasicDrawPane::OnClose(wxCloseEvent& evt)
+{
+	/*
+	if(frame)
+		cvReleaseImage(&frame);
+	*/
+
+	if(capture)
+		cvReleaseCapture(&capture);
+
+	evt.Skip();
 }
 
 void BasicDrawPane::paintEvent(wxPaintEvent& evt)

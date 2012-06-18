@@ -36,10 +36,16 @@ public:
     void paintEvent(wxPaintEvent& evt);
     void paintNow();
     void render(wxDC& dc);
-    
+    void OnClose(wxCloseEvent& evt);
+
     DECLARE_EVENT_TABLE()
 };
  
+BEGIN_EVENT_TABLE(BasicDrawPane, wxPanel)
+EVT_CLOSE(BasicDrawPane::OnClose)
+EVT_PAINT(BasicDrawPane::paintEvent)
+END_EVENT_TABLE()
+
 class MyFrame;
  
 class MyApp : public wxApp {
@@ -53,19 +59,31 @@ public:
 
 class MyFrame : public wxFrame
 {
-    RenderTimer* timer;
-    BasicDrawPane* drawPane;
-    
+private:
+    RenderTimer *timer;
+
+	wxMenuBar *menuBar;
+    wxMenu *fileMenu;
+    wxMenu *helpMenu;
+
+	void createMenu();
+	void menuOnAbout(wxCommandEvent& WXUNUSED(event));
+	void menuOnExit(wxCommandEvent& WXUNUSED(event));
+
 public:
+	BasicDrawPane* drawPane;
+
     MyFrame();
     ~MyFrame();
-    void onClose(wxCloseEvent& evt);
+    void OnClose(wxCloseEvent& evt);
 
     DECLARE_EVENT_TABLE()
 };
  
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-EVT_CLOSE(MyFrame::onClose)
+EVT_CLOSE(MyFrame::OnClose)
+EVT_MENU(wxID_EXIT, MyFrame::menuOnExit)
+EVT_MENU(wxID_ABOUT, MyFrame::menuOnAbout)
 END_EVENT_TABLE()
 
 #endif
