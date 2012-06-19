@@ -1,21 +1,16 @@
 #include "SequenceRenderer.h"
+#include "Gesture.h"
+#include "Logger.h"
 
-const double SequenceRenderer::interval = 0.25f;
+const double SequenceRenderer::interval = 1;
 
-SequenceRenderer::SequenceRenderer(GestureSequence *sequence, ImagePane *lookLeft, ImagePane *lookRight, ImagePane *eyeLeft, ImagePane *eyeRight,
-					 wxBitmap *lookLeftBitmap, wxBitmap *lookRightBitmap, wxBitmap *eyeLeftBitmap, wxBitmap *eyeRightBitmap, wxBitmap *defaultBitmap)
+SequenceRenderer::SequenceRenderer(GestureSequence sequence, MyFrame *frame)
 {
+	logger->printLine("New turn");
+	std::string gestureName = Gesture::Gestures[sequence[0]].getName();
+	logger->printLine(gestureName);
 	this->sequence = sequence;
-	this->lookLeftPane = lookLeft;
-	this->lookRightPane = lookRight;
-	this->eyeLeftPane = eyeLeft;
-	this->eyeRightPane = eyeRight;
-	this->lookLeftBitmap = lookLeftBitmap;
-	this->lookRightBitmap = lookRightBitmap;
-	this->eyeLeftBitmap = eyeLeftBitmap;
-	this->eyeRightBitmap = eyeRightBitmap;
-	this->defaultBitmap = defaultBitmap;
-
+	this->frame = frame;
 	currentIndex = 0;
 	lastTime = time(NULL);
 }
@@ -25,44 +20,9 @@ SequenceRenderer::~SequenceRenderer()
 
 }
 
-void SequenceRenderer::render(GESTURE gesture)
-{
-	lookLeftPane->setImage(*defaultBitmap);
-	lookRightPane->setImage(*defaultBitmap);
-	eyeLeftPane->setImage(*defaultBitmap);
-	eyeRightPane->setImage(*defaultBitmap);
-
-	switch(gesture)
-	{
-		case GESTURE_CENTER:
-
-		break;
-
-		case GESTURE_LEFT:
-			lookLeftPane->setImage(*lookLeftBitmap);
-		break;
-
-		case GESTURE_RIGHT:
-			lookRightPane->setImage(*lookRightBitmap);
-		break;
-
-		case GESTURE_LEFT_EYE:
-			eyeLeftPane->setImage(*eyeLeftBitmap);
-		break;
-
-		case GESTURE_RIGHT_EYE:
-			eyeRightPane->setImage(*eyeRightBitmap);
-		break;
-
-		default:
-
-		break;
-	}
-}
-
 void SequenceRenderer::render()
 {
-	render((*sequence)[currentIndex]);
+	frame->render(sequence[currentIndex]);
 
 	double past = difftime(time(NULL), lastTime);
 
@@ -70,10 +30,20 @@ void SequenceRenderer::render()
 	{
 		currentIndex++;
 		lastTime = time(NULL);
+
+		if(currentIndex < sequence.size())
+		{
+			std::string gestureName = Gesture::Gestures[sequence[currentIndex]].getName();
+			logger->printLine(gestureName);
+		}
 	}
 }
 
 bool SequenceRenderer::done()
 {
-	return currentIndex == sequence->size();
+	if(currentIndex != sequence.size())
+		return false;
+
+	frame->render(GESTURE_CENTER);
+	return true;
 }

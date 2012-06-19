@@ -33,6 +33,7 @@ public:
 	GESTURE getValue();
 	void print();
 	void draw();
+	std::string getName();
 	bool operator == (const Gesture &other);
 	bool operator != (const Gesture &other);
 

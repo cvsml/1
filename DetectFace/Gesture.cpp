@@ -35,6 +35,11 @@ void Gesture::print()
 	cout << name;
 }
 
+std::string Gesture::getName()
+{
+	return name;
+}
+
 void  Gesture::draw()
 {
 	//Throw UnimplamentedException()

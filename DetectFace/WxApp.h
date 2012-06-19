@@ -11,14 +11,18 @@
 #include <opencv2/gpu/gpu.hpp>
 
 #include "MyFrame.h"
+#include "ConsoleDialog.h"
  
 class MyApp : public wxApp {
 private:
+	virtual void OnClose(wxCloseEvent& evt);
     bool OnInit();
     MyFrame *frame;
+	ConsoleDialog *console;
 
 public:
 
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

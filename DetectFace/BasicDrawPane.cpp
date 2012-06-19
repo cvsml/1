@@ -1,6 +1,7 @@
 #include "BasicDrawPane.h"
 #include "Game.h"
 #include "wx/dcbuffer.h"
+#include "SequenceRenderer.h"
 
 BEGIN_EVENT_TABLE(BasicDrawPane, wxPanel)
 EVT_CLOSE(BasicDrawPane::OnClose)
@@ -89,8 +90,7 @@ void BasicDrawPane::drawSequence()
 {
 	if(game.isNewTurn())
 	{
-		(MyFrame*)
-		sequenceRenderer = shared_ptr<SequenceRenderer>(new SequenceRenderer());
+		sequenceRenderer = shared_ptr<SequenceRenderer>(new SequenceRenderer(game.getSequence(), parentFrame));
 	}
 
 	if(sequenceRenderer)

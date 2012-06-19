@@ -51,6 +51,7 @@ public:
 	std::string getFPS();
 
 	bool isNewTurn();
+	GestureSequence getSequence();
 };
 
 #endif

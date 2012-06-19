@@ -10,6 +10,8 @@ class MyFrame : public wxFrame
 {
 private:
     RenderTimer *timer;
+	RenderTimer *guiTimer;
+
 	wxBitmap gestureLookLeftImage;
 	wxBitmap gestureLookRightImage;
 	wxBitmap gestureEyeLeftImage;
@@ -40,6 +42,8 @@ protected:
 public:
     MyFrame();
     ~MyFrame();
+
+	void render(GESTURE gesture);
 };
 
 #endif

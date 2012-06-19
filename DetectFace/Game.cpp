@@ -4,6 +4,8 @@
 #include <opencv2/gpu/gpu.hpp>
 
 #include "Game.h"
+#include "Logger.h"
+
 #include <iostream>
 
 const unsigned int Game::victorySequenceLength = 4;
@@ -34,6 +36,10 @@ Game::~Game()
 void Game::newGame()
 {
 	cout << "NEW GAME" << endl;
+
+	if(logger)
+		logger->printLine("NEW GAME");
+	
 	sequence.reset();
 	newTurn();
 }
@@ -175,4 +181,9 @@ bool Game::isNewTurn()
 
 	newTurnFlag = false;
 	return true;
+}
+
+GestureSequence Game::getSequence()
+{
+	return sequence;
 }

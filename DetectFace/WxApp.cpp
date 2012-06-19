@@ -25,15 +25,38 @@
 #include <cmath>
 #include <sstream>
 
+#include "Logger.h"
+
 using namespace std;
 using namespace cv;
  
 IMPLEMENT_APP(MyApp)
  
+BEGIN_EVENT_TABLE(MyApp, wxApp)
+EVT_CLOSE(MyApp::OnClose)
+END_EVENT_TABLE()
+
 bool MyApp::OnInit()
 {
+	frame = 0;
+	console = 0;
+
     frame = new MyFrame();
     frame->Show();
 
+	console = new ConsoleDialog(frame, -1, wxT("Console"));
+	console->Show();
+
+	logger = new Logger(console->txt);
+
     return true;
 } 
+
+void MyApp::OnClose(wxCloseEvent& evt)
+{
+	if(logger)
+	{
+		delete logger;
+		logger = 0;
+	}
+}

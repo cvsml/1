@@ -8,10 +8,10 @@
 
 class RenderTimer : public wxTimer {
 private:
-    BasicDrawPane *pane;
+    wxPanel *pane;
 
 public:
-    RenderTimer(BasicDrawPane* pane);
+    RenderTimer(wxPanel *pane);
     void Notify();
     void start();
 };

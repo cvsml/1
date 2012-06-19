@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicDrawPane.h" />
+    <ClInclude Include="ConsoleDialog.h" />
     <ClInclude Include="DetectedShape.h" />
     <ClInclude Include="Face.h" />
     <ClInclude Include="Game.h" />
@@ -93,6 +94,7 @@
     <ClInclude Include="GestureGenerator.h" />
     <ClInclude Include="GestureSequence.h" />
     <ClInclude Include="ImagePane.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="MyFrame.h" />
     <ClInclude Include="ObjectDetector.h" />
     <ClInclude Include="FPSCalculator.h" />
@@ -105,6 +107,7 @@
   <ItemGroup>
     <ClCompile Include="BasicDrawPane.cpp" />
     <ClCompile Include="CamShift.cpp" />
+    <ClCompile Include="ConsoleDialog.cpp" />
     <ClCompile Include="DetectedShape.cpp" />
     <ClCompile Include="DetectFace.cpp" />
     <ClCompile Include="Face.cpp" />
@@ -115,6 +118,7 @@
     <ClCompile Include="GestureGenerator.cpp" />
     <ClCompile Include="GestureSequence.cpp" />
     <ClCompile Include="ImagePane.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MyFrame.cpp" />
     <ClCompile Include="ObjectDetector.cpp" />
     <ClCompile Include="RenderTimer.cpp" />

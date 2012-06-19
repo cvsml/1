@@ -3,9 +3,11 @@
 
 #include "wx/wx.h"
 #include "Game.h"
-#include "SequenceRenderer.h"
-#include "MyFrame.h"
+//#include "SequenceRenderer.h"
+//#include "MyFrame.h"
 
+class MyFrame;
+class SequenceRenderer;
 class BasicDrawPane : public wxPanel { 
 private:
 	void drawIplImage(IplImage *image, wxDC &dc);

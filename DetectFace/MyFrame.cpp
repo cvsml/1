@@ -1,4 +1,5 @@
 #include "MyFrame.h"
+#include "Logger.h"
 
 MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50,50), wxSize(640, 480))
 {
@@ -21,6 +22,9 @@ MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50,50),
 	imagesSizer = new wxGridSizer( 2, 2, 0, 0 );
 
 	gestureLookLeft = new ImagePane(guiPanel, gestureDefaultImage);
+
+	//gestureLookLeft->setImage(gestureLookLeftImage);
+
     imagesSizer->Add(gestureLookLeft, 1, wxEXPAND);
 
 	gestureLookRight = new ImagePane(guiPanel, gestureDefaultImage);
@@ -85,13 +89,16 @@ MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50,50),
 	this->Connect( optionsMenuItem->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::menuOnOptions ) );
 
 	timer = new RenderTimer(drawPane);
+	guiTimer = new RenderTimer(gestureLookLeft);
     Show();
     timer->start();
+	guiTimer->Start();
 }
 
 MyFrame::~MyFrame()
 {
     delete timer;
+	delete guiTimer;
 
 	// Disconnect Events
 	this->Disconnect(GetId(), wxEVT_CLOSE_WINDOW, wxCloseEventHandler(MyFrame::OnClose));
@@ -132,4 +139,44 @@ void MyFrame::menuOnAbout( wxCommandEvent& event )
 void MyFrame::menuOnOptions( wxCommandEvent& event )
 {
 
+}
+
+void MyFrame::render(GESTURE gesture)
+{
+	gestureLookLeft->setImage(gestureDefaultImage);
+	gestureLookRight->setImage(gestureDefaultImage);
+	gestureEyeLeft->setImage(gestureDefaultImage);
+	gestureEyeRight->setImage(gestureDefaultImage);
+
+	switch(gesture)
+	{
+		case GESTURE_CENTER:
+
+		break;
+
+		case GESTURE_LEFT:
+			gestureLookLeft->setImage(gestureLookLeftImage);
+		break;
+
+		case GESTURE_RIGHT:
+			gestureLookRight->setImage(gestureLookRightImage);
+		break;
+
+		case GESTURE_LEFT_EYE:
+			gestureEyeLeft->setImage(gestureEyeLeftImage);
+		break;
+
+		case GESTURE_RIGHT_EYE:
+			gestureEyeRight->setImage(gestureEyeRightImage);
+		break;
+
+		default:
+
+		break;
+	}
+
+	gestureLookLeft->Refresh();
+	gestureLookRight->Refresh();
+	gestureEyeLeft->Refresh();
+	gestureEyeRight->Refresh();
 }

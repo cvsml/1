@@ -1,5 +1,6 @@
 #include "ImagePane.h"
 #include "wx/dcbuffer.h"
+#include "Logger.h"
 
 BEGIN_EVENT_TABLE(ImagePane, wxPanel)
 EVT_PAINT(ImagePane::paintEvent)
@@ -32,7 +33,10 @@ void ImagePane::paintEvent(wxPaintEvent& evt)
 	wxAutoBufferedPaintDC dc(this);
 
 	dc.SetBackground(*wxWHITE_BRUSH);
+    dc.Clear();
 
 	if(image.Ok())
+	{
 		dc.DrawBitmap(image, 0, 0, false);
+	}
 }
