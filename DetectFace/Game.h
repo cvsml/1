@@ -35,6 +35,7 @@ private:
 	ObjectDetector rightEyeDetector;
 	ObjectDetector noseDetector;
 
+	bool newTurnFlag;
 	void newTurn();
 	bool checkVictory();
 
@@ -48,6 +49,8 @@ public:
 	void update(IplImage *img);
 	void draw(IplImage *img);
 	std::string getFPS();
+
+	bool isNewTurn();
 };
 
 #endif

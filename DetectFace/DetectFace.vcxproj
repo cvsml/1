@@ -84,6 +84,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BasicDrawPane.h" />
     <ClInclude Include="DetectedShape.h" />
     <ClInclude Include="Face.h" />
     <ClInclude Include="Game.h" />
@@ -91,13 +92,18 @@
     <ClInclude Include="GestureDetector.h" />
     <ClInclude Include="GestureGenerator.h" />
     <ClInclude Include="GestureSequence.h" />
+    <ClInclude Include="ImagePane.h" />
+    <ClInclude Include="MyFrame.h" />
     <ClInclude Include="ObjectDetector.h" />
     <ClInclude Include="FPSCalculator.h" />
+    <ClInclude Include="RenderTimer.h" />
+    <ClInclude Include="SequenceRenderer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WxApp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BasicDrawPane.cpp" />
     <ClCompile Include="CamShift.cpp" />
     <ClCompile Include="DetectedShape.cpp" />
     <ClCompile Include="DetectFace.cpp" />
@@ -108,7 +114,11 @@
     <ClCompile Include="GestureDetector.cpp" />
     <ClCompile Include="GestureGenerator.cpp" />
     <ClCompile Include="GestureSequence.cpp" />
+    <ClCompile Include="ImagePane.cpp" />
+    <ClCompile Include="MyFrame.cpp" />
     <ClCompile Include="ObjectDetector.cpp" />
+    <ClCompile Include="RenderTimer.cpp" />
+    <ClCompile Include="SequenceRenderer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Game Logic">
       <UniqueIdentifier>{3d917a8e-d05f-4e60-864d-ba5ebee24c81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GUI">
+      <UniqueIdentifier>{9af361ac-2c86-4cbd-a39b-e7ff3c00483f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -55,7 +58,22 @@
       <Filter>Source Files\Game Logic</Filter>
     </ClInclude>
     <ClInclude Include="WxApp.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTimer.h">
+      <Filter>Source Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImagePane.h">
+      <Filter>Source Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicDrawPane.h">
+      <Filter>Source Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="MyFrame.h">
+      <Filter>Source Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="SequenceRenderer.h">
+      <Filter>Source Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -96,7 +114,22 @@
       <Filter>Source Files\Game Logic</Filter>
     </ClCompile>
     <ClCompile Include="WxApp.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTimer.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ImagePane.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicDrawPane.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="MyFrame.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="SequenceRenderer.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

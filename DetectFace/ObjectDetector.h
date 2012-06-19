@@ -1,7 +1,6 @@
 #ifndef OBJECT_DETECTOR_H
 #define OBJECT_DETECTOR_H
 
-
 class ObjectDetector {
 private:
 	CascadeClassifier cascade;

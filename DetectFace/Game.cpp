@@ -22,8 +22,8 @@ Game::Game() : faceDetector("haarcascade_frontalface_alt2.xml", 1.4f),
 		getchar();
     }
     
-
 	previousGesture = GESTURE_CENTER;
+	newTurnFlag = false;
 }
 
 Game::~Game()
@@ -58,6 +58,7 @@ void Game::newTurn()
 	sequence.push(generator.nextGesture());
 	sequence.print();
 	index = 0;
+	newTurnFlag = true;
 }
 
 void Game::handleGesture(GESTURE newGesture)
@@ -165,4 +166,13 @@ std::string Game::getFPS()
 	stringstream stream;
 	stream << fps.getFPS();
 	return stream.str();
+}
+
+bool Game::isNewTurn()
+{
+	if(!newTurnFlag)
+		return false;
+
+	newTurnFlag = false;
+	return true;
 }
