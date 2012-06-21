@@ -3,18 +3,24 @@
 
 #include "wx/wx.h"
 #include "Game.h"
-//#include "SequenceRenderer.h"
-//#include "MyFrame.h"
+#include <ctime>
 
 class MyFrame;
 class SequenceRenderer;
+
 class BasicDrawPane : public wxPanel { 
 private:
 	void drawIplImage(IplImage *image, wxDC &dc);
 	Game game;
 	std::shared_ptr<SequenceRenderer> sequenceRenderer;
-	void drawSequence();
+
+	void renderSequence();
+	void renderPlayerGesture();
+
 	MyFrame *parentFrame;
+
+	time_t timeSinceBorderColored;
+	GESTURE lastGesture;
 
 public:
     BasicDrawPane(wxFrame* parent);
@@ -27,6 +33,8 @@ public:
     void paintNow();
     void render(wxDC& dc);
     void OnClose(wxCloseEvent& evt);
+
+	void newGame();
 
     DECLARE_EVENT_TABLE()
 };

@@ -9,36 +9,73 @@ MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50,50),
 	wxBoxSizer* frameSizer;
 	frameSizer = new wxBoxSizer( wxVERTICAL );
 	
-	guiPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxSize( 640,-1 ), wxTAB_TRAVERSAL );
-	guiPanel->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_APPWORKSPACE ) );
+	wxColour bg = wxColour(255, 255, 255);
+
+	SetBackgroundColour(bg);
+
+	wxBoxSizer* guiSizer;
+	guiSizer = new wxBoxSizer( wxHORIZONTAL );
+	
+	wxGridSizer* leftSizer;
+	leftSizer = new wxGridSizer( 0, 2, 0, 0 );
+	
+	leftSizer->SetMinSize(wxSize(100, -1 )); 
+	guiSizer->Add( leftSizer, 0, 0, 5 );
+
+	//guiPanel = new wxPanel( this, wxID_ANY, wxPoint(65, 0), wxSize(310, 310), wxTAB_TRAVERSAL );
+	//guiPanel->SetBackgroundColour(bg);
 	
 	gestureDefaultImage.LoadFile(wxT("resources\\images\\empty.bmp"), wxBITMAP_TYPE_ANY);
 	gestureLookLeftImage.LoadFile(wxT("resources\\images\\lookLeft.bmp"), wxBITMAP_TYPE_ANY);
 	gestureLookRightImage.LoadFile(wxT("resources\\images\\lookRight.bmp"), wxBITMAP_TYPE_ANY);
 	gestureEyeLeftImage.LoadFile(wxT("resources\\images\\eyeLeft.bmp"), wxBITMAP_TYPE_ANY);
 	gestureEyeRightImage.LoadFile(wxT("resources\\images\\eyeRight.bmp"), wxBITMAP_TYPE_ANY);
+	turnComputer.LoadFile(wxT("resources\\images\\pc.bmp"), wxBITMAP_TYPE_ANY);
+	turnPlayer.LoadFile(wxT("resources\\images\\player.bmp"), wxBITMAP_TYPE_ANY);
 
 	wxGridSizer* imagesSizer;
 	imagesSizer = new wxGridSizer( 2, 2, 0, 0 );
+	imagesSizer->SetMinSize(310, 310);
+	imagesSizer->SetDimension(0, 0, 310, 310);
 
-	gestureLookLeft = new ImagePane(guiPanel, gestureDefaultImage);
+	gestureLookLeft = new ImagePane(this, gestureDefaultImage);
+	gestureLookLeft->SetSize(160, 160);
+	gestureLookLeft->setBackgroundColor(bg);
+    imagesSizer->Add(gestureLookLeft, 1, wxALL);
+	gestureLookLeft->SetWindowStyle(wxBORDER_SUNKEN);
 
-	//gestureLookLeft->setImage(gestureLookLeftImage);
+	gestureLookRight = new ImagePane(this, gestureDefaultImage);
+	gestureLookRight->SetSize(160, 160);
+	gestureLookRight->setBackgroundColor(bg);
+    imagesSizer->Add(gestureLookRight, 1, wxALL);
+	gestureLookRight->SetWindowStyle(wxBORDER_THEME);
 
-    imagesSizer->Add(gestureLookLeft, 1, wxEXPAND);
+	gestureEyeLeft = new ImagePane(this, gestureDefaultImage);
+	gestureEyeLeft->SetSize(160, 160);
+	gestureEyeLeft->setBackgroundColor(bg);
+    imagesSizer->Add(gestureEyeLeft, 1, wxALL);
+	gestureEyeLeft->SetWindowStyle(wxBORDER_THEME);
 
-	gestureLookRight = new ImagePane(guiPanel, gestureDefaultImage);
-    imagesSizer->Add(gestureLookRight, 1, wxEXPAND);
+	gestureEyeRight = new ImagePane(this, gestureDefaultImage);
+	gestureEyeRight->SetSize(160, 160);
+	gestureEyeRight->setBackgroundColor(bg);
+    imagesSizer->Add(gestureEyeRight, 1, wxALL);
+	gestureEyeRight->SetWindowStyle(wxBORDER_THEME);
 
-	gestureEyeLeft = new ImagePane(guiPanel, gestureDefaultImage);
-    imagesSizer->Add(gestureEyeLeft, 1, wxEXPAND);
+	guiSizer->Add( imagesSizer, 0, wxALIGN_CENTER|wxALIGN_TOP, 5 );
 
-	gestureEyeRight = new ImagePane(guiPanel, gestureDefaultImage);
-    imagesSizer->Add(gestureEyeRight, 1, wxEXPAND);
-
-	guiPanel->SetSizer( imagesSizer );
-	guiPanel->Layout();
-	frameSizer->Add( guiPanel, 1, wxEXPAND | wxALL, 5 );
+	wxGridSizer* rightSizer;
+	rightSizer = new wxGridSizer(0, 1, 0, 0);
+	
+	rightSizer->SetMinSize(wxSize(100,-1)); 
+	turn = new ImagePane(this, turnComputer);
+	turn->SetSize(170, 170);
+	turn->setBackgroundColor(bg);
+	rightSizer->Add(turn, 0, wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT, 0);
+	
+	guiSizer->Add( rightSizer, 0, wxALIGN_CENTER_VERTICAL, 0 );
+	
+	frameSizer->Add(guiSizer, 0, wxEXPAND, 5);
 	
 	drawPane = new BasicDrawPane(this);
 	frameSizer->Add( drawPane, 1, wxEXPAND | wxALL, 5 );
@@ -89,16 +126,13 @@ MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50,50),
 	this->Connect( optionsMenuItem->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::menuOnOptions ) );
 
 	timer = new RenderTimer(drawPane);
-	guiTimer = new RenderTimer(gestureLookLeft);
     Show();
     timer->start();
-	guiTimer->Start();
 }
 
 MyFrame::~MyFrame()
 {
     delete timer;
-	delete guiTimer;
 
 	// Disconnect Events
 	this->Disconnect(GetId(), wxEVT_CLOSE_WINDOW, wxCloseEventHandler(MyFrame::OnClose));
@@ -118,7 +152,7 @@ void MyFrame::OnClose(wxCloseEvent& evt)
 
 void MyFrame::menuOnNewGame( wxCommandEvent& event )
 {
-
+	drawPane->newGame();
 }
 
 void MyFrame::menuOnExit( wxCommandEvent& event )
@@ -148,35 +182,76 @@ void MyFrame::render(GESTURE gesture)
 	gestureEyeLeft->setImage(gestureDefaultImage);
 	gestureEyeRight->setImage(gestureDefaultImage);
 
-	switch(gesture)
-	{
-		case GESTURE_CENTER:
+	ImagePane *pane = getGesturePane(gesture);
+	wxBitmap *bitmap = getGestureBitmap(gesture);
 
-		break;
-
-		case GESTURE_LEFT:
-			gestureLookLeft->setImage(gestureLookLeftImage);
-		break;
-
-		case GESTURE_RIGHT:
-			gestureLookRight->setImage(gestureLookRightImage);
-		break;
-
-		case GESTURE_LEFT_EYE:
-			gestureEyeLeft->setImage(gestureEyeLeftImage);
-		break;
-
-		case GESTURE_RIGHT_EYE:
-			gestureEyeRight->setImage(gestureEyeRightImage);
-		break;
-
-		default:
-
-		break;
-	}
+	if(pane && bitmap)
+		pane->setImage(*bitmap);
 
 	gestureLookLeft->Refresh();
 	gestureLookRight->Refresh();
 	gestureEyeLeft->Refresh();
 	gestureEyeRight->Refresh();
+}
+
+wxBitmap* MyFrame::getGestureBitmap(GESTURE gesture)
+{
+	switch(gesture)
+	{
+		case GESTURE_LEFT:
+			return &gestureLookLeftImage;
+		break;
+
+		case GESTURE_RIGHT:
+			return &gestureLookRightImage;
+		break;
+
+		case GESTURE_LEFT_EYE:
+			return &gestureEyeLeftImage;
+		break;
+
+		case GESTURE_RIGHT_EYE:
+			return &gestureEyeRightImage;
+		break;
+
+		default:
+			return &gestureDefaultImage;
+		break;
+	}
+}
+
+ImagePane* MyFrame::getGesturePane(GESTURE gesture)
+{
+	switch(gesture)
+	{
+		case GESTURE_LEFT:
+			return gestureLookLeft;
+		break;
+
+		case GESTURE_RIGHT:
+			return gestureLookRight;
+		break;
+
+		case GESTURE_LEFT_EYE:
+			return gestureEyeLeft;
+		break;
+
+		case GESTURE_RIGHT_EYE:
+			return gestureEyeRight;
+		break;
+
+		default:
+			return NULL;
+		break;
+	}
+}
+
+void MyFrame::setGestureBorder(GESTURE gesture, wxColour color)
+{
+	ImagePane *pane = getGesturePane(gesture);
+
+	if(pane)
+	{
+		pane->setBackgroundColor(color);
+	}
 }

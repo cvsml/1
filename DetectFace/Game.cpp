@@ -10,6 +10,8 @@
 
 const unsigned int Game::victorySequenceLength = 4;
 
+#include "SequenceRenderer.h"
+
 using namespace cv;
 
 Game::Game() : faceDetector("haarcascade_frontalface_alt2.xml", 1.4f), 
@@ -25,7 +27,13 @@ Game::Game() : faceDetector("haarcascade_frontalface_alt2.xml", 1.4f),
     }
     
 	previousGesture = GESTURE_CENTER;
+	newGesture = GESTURE_CENTER;
+
 	newTurnFlag = false;
+	locked = false;
+	goodGestureFlag = false;
+	newGestureFlag = false;
+	wonGame = false;
 }
 
 Game::~Game()
@@ -42,14 +50,19 @@ void Game::newGame()
 	
 	sequence.reset();
 	newTurn();
+	locked = false;
+	goodGestureFlag = false;
+	newGestureFlag = false;
+	moveGame = false;
+	wonGame = false;
 }
 
 bool Game::checkVictory()
 {
 	if(sequence.size() == victorySequenceLength)
 	{
-		cout << "YOU WON! Yay!!" << endl << "--------------" <<  endl;
 		newGame();
+		wonGame = true;
 		return true;
 	}
 
@@ -83,10 +96,13 @@ void Game::handleGesture(GESTURE newGesture)
 	}
 
 	// Now we didn't get center, and the previous IS center
+	newGestureFlag = true;
+	this->newGesture = newGesture;
+
 	if(newGesture == sequence[index])
-	{
+	{	
+		goodGestureFlag = true;
 		index++;
-		cout << "Ding!" << endl;
 
 		if(index == sequence.size())
 			newTurn();
@@ -94,13 +110,30 @@ void Game::handleGesture(GESTURE newGesture)
 
 	else
 	{
+		goodGestureFlag = false;
 		cout << "EPIC FAIL!" << endl;
-		newGame();
+		//newGame();
+		moveGame = true;
+		moveGameTimer = time(NULL);
 	}
 }
 
 void Game::update(IplImage *img)
 {
+	fps.addFrame();
+
+	if(locked)
+		return;
+
+	if(moveGame && difftime(time(NULL), moveGameTimer) > SequenceRenderer::pause)
+	{
+		newGame();
+	}
+	else if (moveGame)
+	{
+		return;
+	}
+
 	static Rect lastFaceRectangle(0, 0, 0, 0);
 	Rect faceRectangle;
 
@@ -154,8 +187,6 @@ void Game::update(IplImage *img)
 		cvRectangle(img, lastFaceRectangle.tl(), lastFaceRectangle.br(), CV_RGB(255, 0, 255), 3);
 		*/
 	}
-
-	fps.addFrame();
 }
 
 void Game::draw(IplImage *img)
@@ -174,6 +205,26 @@ std::string Game::getFPS()
 	return stream.str();
 }
 
+GestureSequence Game::getSequence()
+{
+	return sequence;
+}
+
+void Game::lock()
+{
+	locked = true;
+}
+
+void Game::unlock()
+{
+	locked = false;
+}
+
+bool Game::isLocked()
+{
+	return locked;
+}
+
 bool Game::isNewTurn()
 {
 	if(!newTurnFlag)
@@ -183,7 +234,34 @@ bool Game::isNewTurn()
 	return true;
 }
 
-GestureSequence Game::getSequence()
+bool Game::isNewGesture()
 {
-	return sequence;
+	if(!newGestureFlag)
+		return false;
+
+	newGestureFlag = false;
+	return true;
+}
+
+bool Game::isGoodGesture()
+{
+	if(!goodGestureFlag)
+		return false;
+
+	goodGestureFlag = false;
+	return true;
+}
+
+GESTURE Game::getNewGesture()
+{
+	return newGesture;
+}
+
+bool Game::isWonGame()
+{
+	if(!wonGame)
+		return false;
+
+	wonGame = false;
+	return true;
 }

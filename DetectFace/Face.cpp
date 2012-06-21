@@ -45,6 +45,7 @@ shared_ptr<DetectedShape> Face::getRightEyeArea()
 	return rightEyeArea;
 }
 
+/*
 double Face::getLeftAngle()
 {
 	return getDegree(rightEyeArea->getCenter(), leftEyeArea->getCenter(), noseArea->getCenter());
@@ -83,11 +84,9 @@ double Face::getDegree(Vec2f &center1, Vec2f &center2, Vec2f &center3)
 
 	return getDegree(vec1, vec2);
 }
+*/
 
 /*
- * Nose is between the left and the right eye, between 0 and 1. If the ratio is 0.3, then that means
- * that the nose is 30% between the left and the right eye, closer to the left eye.
- */
 double Face::getRatioOld()
 {
 	double xLeftEye = leftEyeArea->getCenter()[0];
@@ -96,7 +95,12 @@ double Face::getRatioOld()
 
 	return (xNose - xLeftEye) / (xRightEye - xLeftEye);
 }
+*/
 
+/*
+ * Nose is between the left and the right eye, between 0 and 1. If the ratio is 0.3, then that means
+ * that the nose is 30% between the left and the right eye, closer to the left eye.
+ */
 double Face::getRatio()
 {
 	Vec2f leftEye = leftEyeArea->getCenter();

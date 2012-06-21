@@ -39,6 +39,16 @@ private:
 	void newTurn();
 	bool checkVictory();
 
+	bool locked;
+	bool newGestureFlag;
+	bool goodGestureFlag;
+
+	GESTURE newGesture;
+
+	bool moveGame;
+	time_t moveGameTimer;
+	bool wonGame;
+
 public:
 	Game();
 	~Game();
@@ -50,8 +60,18 @@ public:
 	void draw(IplImage *img);
 	std::string getFPS();
 
+	bool isWonGame();
 	bool isNewTurn();
+
+	bool isNewGesture();
+	bool isGoodGesture();
+	GESTURE getNewGesture();
+
 	GestureSequence getSequence();
+
+	void lock();
+	void unlock();
+	bool isLocked();
 };
 
 #endif

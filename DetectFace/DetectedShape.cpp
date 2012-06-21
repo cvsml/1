@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include <ctime>
 #include "DetectedShape.h"
+#include "WxApp.h"
 
 const double DetectedShape::oldTime = 0.5;
 
@@ -49,8 +50,10 @@ Vec2f DetectedShape::getCenter()
 
 void DetectedShape::draw(IplImage *img, CvScalar color)
 {
-	if(isValid())
-		cvRectangle(img, rect.tl(), rect.br(), color, 3);
+	#ifdef APP_DEBUG
+		if(isValid())
+			cvRectangle(img, rect.tl(), rect.br(), color, 3);
+	#endif
 }
 
 bool DetectedShape::isValid()

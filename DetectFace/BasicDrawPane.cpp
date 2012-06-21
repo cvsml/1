@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "wx/dcbuffer.h"
 #include "SequenceRenderer.h"
+#include "Logger.h"
 
 BEGIN_EVENT_TABLE(BasicDrawPane, wxPanel)
 EVT_CLOSE(BasicDrawPane::OnClose)
@@ -23,6 +24,9 @@ BasicDrawPane::BasicDrawPane(wxFrame* parent) : wxPanel(parent, wxID_ANY, wxPoin
 
 	capture = 0;
     capture = cvCaptureFromCAM(0);
+
+	timeSinceBorderColored = 0;
+	lastGesture = GESTURE_CENTER;
 }
  
 BasicDrawPane::~BasicDrawPane()
@@ -57,6 +61,11 @@ void BasicDrawPane::paintEvent(wxPaintEvent& evt)
     if(!frame)
         return;
             
+	if(game.isWonGame())
+	{
+		wxMessageBox(wxT("You've won!"), wxT("Congratulations"), wxOK | wxICON_INFORMATION);
+	}
+
     // Allocate framecopy as the same size of the frame
 	float scale = 640.0f / (float)frame->width;
     if(!frame_copy) {
@@ -72,7 +81,8 @@ void BasicDrawPane::paintEvent(wxPaintEvent& evt)
 	dc.SetTextForeground(wxColour(wxString("Red", wxConvUTF8)));
 	dc.DrawText(wxString(game.getFPS().c_str(), wxConvUTF8), 40, 40); 
 	
-	drawSequence();
+	renderSequence();
+	renderPlayerGesture();
 
     //dc.SetBackground(*wxWHITE_BRUSH);
    // dc.Clear();
@@ -86,18 +96,59 @@ void BasicDrawPane::drawIplImage(IplImage *image, wxDC &dc)
 	dc.DrawBitmap(result, 0, 0);
 }
 
-void BasicDrawPane::drawSequence()
+void BasicDrawPane::renderSequence()
 {
+	// If it's a new turn, create a new sequence renderer
 	if(game.isNewTurn())
 	{
 		sequenceRenderer = shared_ptr<SequenceRenderer>(new SequenceRenderer(game.getSequence(), parentFrame));
+		game.lock();
+		parentFrame->turn->setImage(parentFrame->turnComputer);
 	}
 
+	// If the sequence renderer exists, check if it's done
 	if(sequenceRenderer)
 	{
+		// If it's done, destroy it
 		if(sequenceRenderer->done())
+		{
 			sequenceRenderer.reset();
+			game.unlock();
+			parentFrame->turn->setImage(parentFrame->turnPlayer);
+		}
+
+		// Otherwise it's not done yet, so let it render
 		else
 			sequenceRenderer->render();
 	}
+}
+
+void BasicDrawPane::renderPlayerGesture()
+{	
+	if(game.isNewGesture())
+	{
+		logger->printLine(string("Greying gesture ") + Gesture::Gestures[lastGesture].getName());
+		parentFrame->setGestureBorder(lastGesture, parentFrame->GetBackgroundColour());
+		
+		wxColour frameColor = game.isGoodGesture() ? wxColour(0, 255, 0) : wxColour(255, 0, 0);
+		GESTURE newGesture = game.getNewGesture();
+		lastGesture = newGesture;
+
+		logger->printLine(string("Coloring gesture ") + Gesture::Gestures[newGesture].getName());
+		parentFrame->setGestureBorder(newGesture, frameColor);
+
+		timeSinceBorderColored = time(NULL);
+	}
+
+	double past = difftime(time(NULL), timeSinceBorderColored);
+
+	if(past > SequenceRenderer::pause)
+	{
+		parentFrame->setGestureBorder(lastGesture, parentFrame->GetBackgroundColour());
+	}
+}
+
+void BasicDrawPane::newGame()
+{
+	game.newGame();
 }

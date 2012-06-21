@@ -45,7 +45,10 @@ bool MyApp::OnInit()
     frame->Show();
 
 	console = new ConsoleDialog(frame, -1, wxT("Console"));
-	console->Show();
+
+#ifdef APP_DEBUG
+		console->Show();
+#endif
 
 	logger = new Logger(console->txt);
 

@@ -6,19 +6,24 @@
 #include "GestureSequence.h"
 #include "MyFrame.h"
 
-//class MyFrame;
 class SequenceRenderer {
 private:
+
 	GestureSequence sequence;
 	MyFrame *frame;
+	GESTURE currentGesture;
 
-	const static double interval;
 	int currentIndex;
 	time_t lastTime;
+
+	void render(GESTURE gesture);
 
 public:
 	SequenceRenderer(GestureSequence sequence, MyFrame *frame);
 	~SequenceRenderer();
+
+	const static double interval;
+	const static double pause;
 
 	void render();
 	bool done();

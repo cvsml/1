@@ -10,7 +10,6 @@ class MyFrame : public wxFrame
 {
 private:
     RenderTimer *timer;
-	RenderTimer *guiTimer;
 
 	wxBitmap gestureLookLeftImage;
 	wxBitmap gestureLookRightImage;
@@ -18,12 +17,14 @@ private:
 	wxBitmap gestureEyeRightImage;
 	wxBitmap gestureDefaultImage;
 
-protected:
-	wxPanel *guiPanel;
 	ImagePane *gestureLookLeft;
 	ImagePane *gestureLookRight;
 	ImagePane *gestureEyeLeft;
 	ImagePane *gestureEyeRight;
+	
+
+protected:
+	wxPanel *guiPanel;
 
 	BasicDrawPane *drawPane;
 	wxMenuBar *menuBar;
@@ -39,11 +40,19 @@ protected:
 	virtual void menuOnOptions( wxCommandEvent& event );
 	virtual void OnClose(wxCloseEvent& evt);
 
+	ImagePane* getGesturePane(GESTURE gesture);
+	wxBitmap* getGestureBitmap(GESTURE gesture);
+
 public:
     MyFrame();
     ~MyFrame();
 
 	void render(GESTURE gesture);
+	void setGestureBorder(GESTURE gesture, wxColour color);
+
+	ImagePane *turn;
+	wxBitmap turnComputer;
+	wxBitmap turnPlayer;
 };
 
 #endif

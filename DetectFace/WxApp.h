@@ -12,7 +12,9 @@
 
 #include "MyFrame.h"
 #include "ConsoleDialog.h"
- 
+
+//#define APP_DEBUG 1
+
 class MyApp : public wxApp {
 private:
 	virtual void OnClose(wxCloseEvent& evt);
@@ -21,8 +23,8 @@ private:
 	ConsoleDialog *console;
 
 public:
-
 	DECLARE_EVENT_TABLE()
+
 };
 
 #endif

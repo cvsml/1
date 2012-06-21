@@ -7,15 +7,18 @@
 class ImagePane : public wxPanel { 
 private:
 	wxBitmap image;
+	wxColour backgroundColor;
+	void init(wxBitmap &image);
 
 public:
-    ImagePane(wxPanel *parent, wxString file, wxBitmapType format);
-	ImagePane(wxPanel *parent, wxBitmap &image);
+    ImagePane(wxFrame *parent, wxString file, wxBitmapType format);
+	ImagePane(wxFrame *parent, wxBitmap &image);
+
 	~ImagePane();
 
 	void setImage(wxBitmap &image);
-
     void paintEvent(wxPaintEvent& evt);
+	void setBackgroundColor(wxColour backgroundColor);
 
     DECLARE_EVENT_TABLE()
 };

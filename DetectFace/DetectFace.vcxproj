@@ -106,10 +106,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicDrawPane.cpp" />
-    <ClCompile Include="CamShift.cpp" />
     <ClCompile Include="ConsoleDialog.cpp" />
     <ClCompile Include="DetectedShape.cpp" />
-    <ClCompile Include="DetectFace.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="FPSCalculator.cpp" />
     <ClCompile Include="Game.cpp" />

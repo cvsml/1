@@ -2,7 +2,8 @@
 #include "Gesture.h"
 #include "Logger.h"
 
-const double SequenceRenderer::interval = 1;
+const double SequenceRenderer::interval = 0.7;
+const double SequenceRenderer::pause = 0.4;
 
 SequenceRenderer::SequenceRenderer(GestureSequence sequence, MyFrame *frame)
 {
@@ -12,6 +13,7 @@ SequenceRenderer::SequenceRenderer(GestureSequence sequence, MyFrame *frame)
 	this->sequence = sequence;
 	this->frame = frame;
 	currentIndex = 0;
+	currentGesture = sequence[currentIndex];
 	lastTime = time(NULL);
 }
 
@@ -22,20 +24,30 @@ SequenceRenderer::~SequenceRenderer()
 
 void SequenceRenderer::render()
 {
-	frame->render(sequence[currentIndex]);
+	frame->render(currentGesture);
 
-	double past = difftime(time(NULL), lastTime);
+	time_t currentTime = time(NULL);
+	double past = difftime(currentTime, lastTime);
 
-	if(past >= interval)
+	// Done with pause state, move on
+	if(past >= (interval + pause))
 	{
 		currentIndex++;
-		lastTime = time(NULL);
+		lastTime = currentTime;
+		currentGesture = sequence[currentIndex];
 
 		if(currentIndex < sequence.size())
 		{
 			std::string gestureName = Gesture::Gestures[sequence[currentIndex]].getName();
 			logger->printLine(gestureName);
 		}
+	}
+
+	// Need to enter pause state
+	else if(past >= interval)
+	{
+		currentGesture = GESTURE_CENTER;
+		//logger->printLine("Will render DEFAULT in next frame");
 	}
 }
 
