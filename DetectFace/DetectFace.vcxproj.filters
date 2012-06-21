@@ -19,6 +19,9 @@
     <Filter Include="Source Files\GUI">
       <UniqueIdentifier>{9af361ac-2c86-4cbd-a39b-e7ff3c00483f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Sound">
+      <UniqueIdentifier>{7db81955-4c0e-43ae-8f34-0354ae61b272}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -81,6 +84,9 @@
     <ClInclude Include="ConsoleDialog.h">
       <Filter>Source Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="FMod.h">
+      <Filter>Source Files\Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -136,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="ConsoleDialog.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="FMod.cpp">
+      <Filter>Source Files\Sound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

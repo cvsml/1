@@ -1,6 +1,7 @@
 #include "SequenceRenderer.h"
 #include "Gesture.h"
 #include "Logger.h"
+#include "FMod.h"
 
 const double SequenceRenderer::interval = 0.7;
 const double SequenceRenderer::pause = 0.4;
@@ -15,6 +16,14 @@ SequenceRenderer::SequenceRenderer(GestureSequence sequence, MyFrame *frame)
 	currentIndex = 0;
 	currentGesture = sequence[currentIndex];
 	lastTime = time(NULL);
+
+	if(sound)
+	{
+		FMOD::Sound *gestureSound = frame->getGestureSound(currentGesture);
+
+		if(gestureSound)
+			sound->playSound(gestureSound);
+	}
 }
 
 SequenceRenderer::~SequenceRenderer()
@@ -40,6 +49,14 @@ void SequenceRenderer::render()
 		{
 			std::string gestureName = Gesture::Gestures[sequence[currentIndex]].getName();
 			logger->printLine(gestureName);
+		}
+
+		if(sound)
+		{
+			FMOD::Sound *gestureSound = frame->getGestureSound(currentGesture);
+
+			if(gestureSound)
+				sound->playSound(gestureSound);
 		}
 	}
 

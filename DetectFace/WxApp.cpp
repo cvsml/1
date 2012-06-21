@@ -26,6 +26,7 @@
 #include <sstream>
 
 #include "Logger.h"
+#include "FMod.h"
 
 using namespace std;
 using namespace cv;
@@ -40,6 +41,7 @@ bool MyApp::OnInit()
 {
 	frame = 0;
 	console = 0;
+	sound = new Sound();
 
     frame = new MyFrame();
     frame->Show();
@@ -61,5 +63,11 @@ void MyApp::OnClose(wxCloseEvent& evt)
 	{
 		delete logger;
 		logger = 0;
+	}
+
+	if(sound)
+	{
+		delete sound;
+		sound = 0;
 	}
 }

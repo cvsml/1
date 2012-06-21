@@ -39,14 +39,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\wxWidgets-2.8.12\include\msvc;C:\wxWidgets-2.8.12\include;C:\OpenCV\build\include\opencv;C:\OpenCV\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\wxWidgets-2.8.12\lib\vc_lib\mswud;C:\wxWidgets-2.8.12\lib\vc_lib;C:\OpenCV\build\x86\vc10\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files (x86)\FMOD SoundSystem\FMOD Programmers API Windows\api\inc;C:\wxWidgets-2.8.12\include\msvc;C:\wxWidgets-2.8.12\include;C:\OpenCV\build\include\opencv;C:\OpenCV\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\FMOD SoundSystem\FMOD Programmers API Windows\api\lib;C:\wxWidgets-2.8.12\lib\vc_lib\mswud;C:\wxWidgets-2.8.12\lib\vc_lib;C:\OpenCV\build\x86\vc10\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>C:\OpenCV\build\x86\vc10\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\wxWidgets-2.8.12\include\msvc;C:\wxWidgets-2.8.12\include;C:\OpenCV\build\include\opencv;C:\OpenCV\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\wxWidgets-2.8.12\lib\vc_lib\mswu;C:\wxWidgets-2.8.12\lib\vc_lib;C:\OpenCV\build\x86\vc10\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files (x86)\FMOD SoundSystem\FMOD Programmers API Windows\api\inc;C:\wxWidgets-2.8.12\include\msvc;C:\wxWidgets-2.8.12\include;C:\OpenCV\build\include\opencv;C:\OpenCV\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\wxWidgets-2.8.12\lib\vc_lib\mswu;C:\wxWidgets-2.8.12\lib\vc_lib;C:\OpenCV\build\x86\vc10\lib;C:\Program Files (x86)\FMOD SoundSystem\FMOD Programmers API Windows\api\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -58,7 +58,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_core231d.lib;opencv_haartraining_engined.lib;opencv_highgui231d.lib;opencv_legacy231d.lib;opencv_ml231d.lib;opencv_objdetect231d.lib;opencv_features2d231d.lib;opencv_imgproc231d.lib;opencv_video231d.lib;opencv_gpu231d.lib;wxmsw28ud_core.lib;wxbase28ud.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;wxpngd.lib;wxzlibd.lib;wxjpegd.lib;wxtiffd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core231d.lib;opencv_haartraining_engined.lib;opencv_highgui231d.lib;opencv_legacy231d.lib;opencv_ml231d.lib;opencv_objdetect231d.lib;opencv_features2d231d.lib;opencv_imgproc231d.lib;opencv_video231d.lib;opencv_gpu231d.lib;wxmsw28ud_core.lib;wxbase28ud.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;wxpngd.lib;wxzlibd.lib;wxjpegd.lib;wxtiffd.lib;fmodexL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -77,7 +77,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opencv_core231.lib;opencv_haartraining_engine.lib;opencv_highgui231.lib;opencv_legacy231.lib;opencv_ml231.lib;opencv_objdetect231.lib;opencv_features2d231.lib;opencv_imgproc231.lib;opencv_video231.lib;opencv_gpu231.lib;wxmsw28u_core.lib;wxbase28u.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;wxpng.lib;wxzlib.lib;wxjpeg.lib;wxtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core231.lib;opencv_haartraining_engine.lib;opencv_highgui231.lib;opencv_legacy231.lib;opencv_ml231.lib;opencv_objdetect231.lib;opencv_features2d231.lib;opencv_imgproc231.lib;opencv_video231.lib;opencv_gpu231.lib;wxmsw28u_core.lib;wxbase28u.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;wxpng.lib;wxzlib.lib;wxjpeg.lib;wxtiff.lib;fmodex_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -88,6 +88,7 @@
     <ClInclude Include="ConsoleDialog.h" />
     <ClInclude Include="DetectedShape.h" />
     <ClInclude Include="Face.h" />
+    <ClInclude Include="FMod.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Gesture.h" />
     <ClInclude Include="GestureDetector.h" />
@@ -109,6 +110,7 @@
     <ClCompile Include="ConsoleDialog.cpp" />
     <ClCompile Include="DetectedShape.cpp" />
     <ClCompile Include="Face.cpp" />
+    <ClCompile Include="FMod.cpp" />
     <ClCompile Include="FPSCalculator.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gesture.cpp" />

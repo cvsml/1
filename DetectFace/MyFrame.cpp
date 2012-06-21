@@ -1,5 +1,6 @@
 #include "MyFrame.h"
 #include "Logger.h"
+#include "FMod.h"
 
 MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50,50), wxSize(640, 480))
 {
@@ -125,6 +126,14 @@ MyFrame::MyFrame() : wxFrame((wxFrame *)NULL, -1,  wxT("Simon"), wxPoint(50,50),
 	this->Connect( aboutMenuItem->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::menuOnAbout ) );
 	this->Connect( optionsMenuItem->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::menuOnOptions ) );
 
+	if(sound)
+	{
+		lookLeftSound	= sound->loadSound("resources\\sounds\\1.wav");
+		lookRightSound	= sound->loadSound("resources\\sounds\\2.wav");
+		eyeLeftSound	= sound->loadSound("resources\\sounds\\3.wav");
+		eyeRightSound	= sound->loadSound("resources\\sounds\\4.wav");
+	}
+
 	timer = new RenderTimer(drawPane);
     Show();
     timer->start();
@@ -238,6 +247,32 @@ ImagePane* MyFrame::getGesturePane(GESTURE gesture)
 
 		case GESTURE_RIGHT_EYE:
 			return gestureEyeRight;
+		break;
+
+		default:
+			return NULL;
+		break;
+	}
+}
+
+FMOD::Sound* MyFrame::getGestureSound(GESTURE gesture)
+{
+	switch(gesture)
+	{
+		case GESTURE_LEFT:
+			return lookLeftSound;
+		break;
+
+		case GESTURE_RIGHT:
+			return lookRightSound;
+		break;
+
+		case GESTURE_LEFT_EYE:
+			return eyeLeftSound;
+		break;
+
+		case GESTURE_RIGHT_EYE:
+			return eyeRightSound;
 		break;
 
 		default:

@@ -60,7 +60,10 @@ void BasicDrawPane::paintEvent(wxPaintEvent& evt)
     // If the frame does not exist, quit the loop
     if(!frame)
         return;
-            
+        
+	if(sound)
+		sound->update();
+
 	if(game.isWonGame())
 	{
 		wxMessageBox(wxT("You've won!"), wxT("Congratulations"), wxOK | wxICON_INFORMATION);
@@ -138,6 +141,14 @@ void BasicDrawPane::renderPlayerGesture()
 		parentFrame->setGestureBorder(newGesture, frameColor);
 
 		timeSinceBorderColored = time(NULL);
+
+		if(sound)
+		{
+			FMOD::Sound *gestureSound = parentFrame->getGestureSound(newGesture);
+
+			if(gestureSound)
+				sound->playSound(gestureSound);
+		}
 	}
 
 	double past = difftime(time(NULL), timeSinceBorderColored);

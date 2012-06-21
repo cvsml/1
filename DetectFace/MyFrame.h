@@ -5,6 +5,7 @@
 #include "BasicDrawPane.h"
 #include "ImagePane.h"
 #include "RenderTimer.h"
+#include "FMod.h"
 
 class MyFrame : public wxFrame
 {
@@ -22,6 +23,10 @@ private:
 	ImagePane *gestureEyeLeft;
 	ImagePane *gestureEyeRight;
 	
+	FMOD::Sound *lookLeftSound;
+	FMOD::Sound *lookRightSound;
+	FMOD::Sound *eyeLeftSound;
+	FMOD::Sound *eyeRightSound;
 
 protected:
 	wxPanel *guiPanel;
@@ -53,6 +58,8 @@ public:
 	ImagePane *turn;
 	wxBitmap turnComputer;
 	wxBitmap turnPlayer;
+
+	FMOD::Sound* getGestureSound(GESTURE gesture);
 };
 
 #endif

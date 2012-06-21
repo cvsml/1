@@ -13,7 +13,7 @@
 #include "MyFrame.h"
 #include "ConsoleDialog.h"
 
-//#define APP_DEBUG 1
+#define APP_DEBUG 1
 
 class MyApp : public wxApp {
 private:
